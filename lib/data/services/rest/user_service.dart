@@ -66,7 +66,6 @@ class UserService implements IUserService {
     if (response.statusCode == 201) {
       return UserModel.fromJson(response.data);
     } else {
-      print(UserModel.fromJson(response.data));
       throw ServerException(response.data['message']);
     }
   }
