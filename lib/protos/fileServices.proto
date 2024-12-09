@@ -1,0 +1,40 @@
+syntax = "proto3";
+
+package fileServices;
+
+// Definición del servicio ProfileImageService
+service ProfileImageService {
+    rpc downloadProfileImage (ImageRequest) returns (ImageResponse);
+    rpc uploadProfileImage (UploadImageRequest) returns (UploadImageResponse);
+    rpc deleteProfileImage (ImageRequest) returns (DeleteImageResponse);
+}
+
+// Definición del servicio CoverImageService
+service CoverImageService {
+    rpc downloadCoverImage (ImageRequest) returns (ImageResponse);
+    rpc uploadCoverImage (UploadImageRequest) returns (UploadImageResponse);
+    rpc deleteCoverImage (ImageRequest) returns (DeleteImageResponse);
+}
+
+// Definición de los mensajes
+message ImageRequest {
+    string path = 1;
+}
+
+message ImageResponse {
+    string imageData = 1;
+}
+
+message UploadImageRequest {
+    string fileName = 1;
+    string imageData = 2;
+}
+
+message UploadImageResponse {
+    string message = 1;
+    string filePath = 2;
+}
+
+message DeleteImageResponse {
+    string message = 1;
+}
