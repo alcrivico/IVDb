@@ -12,10 +12,9 @@ abstract class IUserService {
 }
 
 class UserService implements IUserService {
-  static final userClient =
-      RestClient(baseUrl: 'http://localhost:8080/api/user');
+  UserService({required this.restClient});
 
-  UserService();
+  final RestClient restClient;
 
   @override
   Future<Map<String, dynamic>> login(String email, String password) async {
@@ -24,13 +23,13 @@ class UserService implements IUserService {
       'password': password,
     };
 
-    final response = await userClient.dio.post('/login', data: data);
+    final response = await restClient.dio.post('/user/login', data: data);
 
     if (response.statusCode == 200) {
       final token = response.headers.value('x-token');
 
       if (token != null) {
-        userClient.setAuthToken(token);
+        restClient.setAuthToken(token);
       } else {
         throw ServerException(
             'Token no encontrado en la respuesta del servidor');
@@ -61,7 +60,7 @@ class UserService implements IUserService {
       'password': password,
     };
 
-    final response = await userClient.dio.post('/signup', data: data);
+    final response = await restClient.dio.post('/user/signup', data: data);
 
     if (response.statusCode == 201) {
       return UserModel.fromJson(response.data);
@@ -72,10 +71,11 @@ class UserService implements IUserService {
 
   @override
   Future<void> logout() async {
-    userClient.clearAuthToken();
+    restClient.clearAuthToken();
   }
 }
 
 final userServiceProvider = Provider<UserService>((ref) {
-  return UserService();
+  final restClient = ref.read(restClientProvider);
+  return UserService(restClient: restClient);
 });

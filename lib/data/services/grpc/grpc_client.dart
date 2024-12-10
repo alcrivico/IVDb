@@ -1,4 +1,5 @@
 import 'package:grpc/grpc.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 class GrpcClient {
   late ClientChannel _channel;
@@ -17,3 +18,7 @@ class GrpcClient {
     await _channel.shutdown();
   }
 }
+
+final grpcClientProvider = Provider((ref) {
+  return GrpcClient();
+});

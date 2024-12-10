@@ -44,6 +44,15 @@ class UserRepository implements IUserRepository {
       return Left(ServerException(e.toString()));
     }
   }
+
+  @override
+  Future<void> logout() {
+    try {
+      return _userService.logout();
+    } catch (e) {
+      throw ServerException(e.toString());
+    }
+  }
 }
 
 final userRepositoryProvider = Provider<IUserRepository>((ref) {
