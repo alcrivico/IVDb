@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:ivdb/presentation/widgets/login/alert_message_info.dart';
 import 'package:ivdb/presentation/widgets/shared/button_box.dart';
+import 'package:ivdb/presentation/widgets/shared/home_box.dart';
 import 'package:ivdb/presentation/widgets/shared/text_field_box.dart';
 import 'package:ivdb/presentation/viewmodels/signup/signup_viewmodel.dart';
 import 'package:ivdb/presentation/viewmodels/signup/signup_state.dart';
@@ -23,6 +24,9 @@ class SignupView extends HookConsumerWidget {
     final confirmPasswordController = TextEditingController();
 
     final TextButton btnIniciarSesion = TextButton(
+      style: ButtonStyle(
+          padding: WidgetStateProperty.all(EdgeInsets.zero),
+          overlayColor: WidgetStateProperty.all(Colors.transparent)),
       onPressed: () {
         Navigator.pushReplacement(
           context,
@@ -44,30 +48,8 @@ class SignupView extends HookConsumerWidget {
 
     return Scaffold(
         appBar: AppBar(
-          flexibleSpace: Container(
-            alignment: Alignment.topLeft,
-            padding: const EdgeInsets.only(left: 20, right: 20),
-            decoration: const BoxDecoration(
-              color: Colors.white,
-            ),
-            child: Row(
-              children: [
-                const Text('IVDb',
-                    style: TextStyle(
-                        fontSize: 40,
-                        color: Color(0xff1971c2),
-                        fontStyle: FontStyle.normal,
-                        fontFamily: 'Anton SC',
-                        fontWeight: FontWeight.normal),
-                    textAlign: TextAlign.center),
-                Icon(
-                  Icons.menu_rounded,
-                  color: const Color(0xff1971c2),
-                  size: 40,
-                  weight: 12,
-                )
-              ],
-            ),
+          title: HomeBox(
+            onPressed: null,
           ),
         ),
         body: SingleChildScrollView(
@@ -130,17 +112,20 @@ class SignupView extends HookConsumerWidget {
             else
               const SizedBox(height: 0),
             SizedBox(height: size.height * 0.03),
-            ButtonBox(
-                text: 'Registrarse',
-                onPressed: () {
-                  final username = usernameController.text.trim();
-                  final email = emailController.text.trim();
-                  final password = passwordController.text;
-                  final confirmPassword = confirmPasswordController.text;
+            if (signupState.status == SignupStatus.loading)
+              const CircularProgressIndicator()
+            else
+              ButtonBox(
+                  text: 'Registrarse',
+                  onPressed: () {
+                    final username = usernameController.text.trim();
+                    final email = emailController.text.trim();
+                    final password = passwordController.text;
+                    final confirmPassword = confirmPasswordController.text;
 
-                  signupViewModel.signup(
-                      username, email, password, confirmPassword);
-                }),
+                    signupViewModel.signup(
+                        username, email, password, confirmPassword);
+                  }),
             SizedBox(height: size.height * 0.05),
             btnIniciarSesion,
           ]),
