@@ -8,4 +8,6 @@ abstract class IUserRepository {
 
   Future<Either<FailException, UserEntity>> signup(
       String username, String email, String password);
+
+  Future<void> logout();
 }
