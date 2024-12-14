@@ -4,6 +4,7 @@ class VideogameEntity {
   final String description;
   final DateTime releaseDate;
   final String imageRoute;
+  String? imageData;
   final String? developers;
   final String? platforms;
   final String? genres;
@@ -16,6 +17,7 @@ class VideogameEntity {
     required this.description,
     required this.releaseDate,
     required this.imageRoute,
+    this.imageData,
     this.developers,
     this.platforms,
     this.genres,

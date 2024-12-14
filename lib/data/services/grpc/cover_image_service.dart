@@ -12,7 +12,7 @@ abstract class ICoverImageService {
 }
 
 class CoverImageService implements ICoverImageService {
-  late final CoverImageServiceClient _client;
+  late final CoverImageServiceClient? _client;
 
   CoverImageService(GrpcClient grpcClient) {
     _client = CoverImageServiceClient(grpcClient.channel);
@@ -22,9 +22,9 @@ class CoverImageService implements ICoverImageService {
   Future<ImageResponse> downloadCoverImage(String path) async {
     final request = ImageRequest()..path = path;
     print('Sending gRPC request to download cover image with path: $path');
-    final response = await _client.downloadCoverImage(request);
+    final response = await _client!.downloadCoverImage(request);
     print(
-        'Received gRPC response for download cover image: ${response.imageData}');
+        'Received gRPC response for download cover image: ${response.imageData.length}kb');
     return response;
   }
 
@@ -36,7 +36,7 @@ class CoverImageService implements ICoverImageService {
       ..imageData = imageData;
     print(
         'Sending gRPC request to upload cover image with fileName: $fileName');
-    final response = await _client.uploadCoverImage(request);
+    final response = await _client!.uploadCoverImage(request);
     print('Received gRPC response for upload cover image: ${response.message}');
     return response;
   }
@@ -45,7 +45,7 @@ class CoverImageService implements ICoverImageService {
   Future<DeleteImageResponse> deleteCoverImage(String path) async {
     final request = ImageRequest()..path = path;
     print('Sending gRPC request to delete cover image with path: $path');
-    final response = await _client.deleteCoverImage(request);
+    final response = await _client!.deleteCoverImage(request);
     print('Received gRPC response for delete cover image: ${response.message}');
     return response;
   }
