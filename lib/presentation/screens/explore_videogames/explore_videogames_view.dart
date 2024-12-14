@@ -70,11 +70,25 @@ class ExploreVideogamesView extends HookConsumerWidget {
                         Icons.key,
                         color: Color.fromARGB(255, 194, 25, 25),
                       ),
+                    if (user.roleId == 1) const SizedBox(width: 10),
+                    if (user.roleId == 1)
+                      TextButton(
+                          child: const Text('Evaluar Usuarios'),
+                          onPressed: () {
+                            print('Evaluar solicitudes de usuarios');
+                          }),
                     if (user.roleId == 2)
                       Icon(
                         Icons.person,
                         color: Color(0xff1971c2),
                       ),
+                    if (user.roleId == 2) const SizedBox(width: 10),
+                    if (user.roleId == 2)
+                      TextButton(
+                          child: const Text('Solicitar Privilegios'),
+                          onPressed: () {
+                            print('Solicitar privilegio de critico');
+                          }),
                     if (user.roleId == 3)
                       Icon(
                         Icons.star,
