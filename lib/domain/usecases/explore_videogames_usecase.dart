@@ -6,7 +6,6 @@ import 'package:ivdb/data/repositories/rest/videogame_repository.dart';
 import 'package:ivdb/domain/entities/videogame_entity.dart';
 import 'package:ivdb/domain/repositories/i_cover_image_repository.dart';
 import 'package:ivdb/domain/repositories/i_videogame_repository.dart';
-import 'package:ivdb/protos/generated/fileServices.pb.dart';
 
 class ExploreVideogamesUsecase {
   final IVideogameRepository _videogameRepository;
@@ -27,7 +26,7 @@ class ExploreVideogamesUsecase {
 
     if (videogameList.isRight()) {
       // Carga las imágenes de forma concurrente
-      final result = await videogameList.fold(
+      await videogameList.fold(
         (fail) => Future<Either<FailException, List<VideogameEntity>>>.value(
             Left(fail)),
         (videogames) async {
