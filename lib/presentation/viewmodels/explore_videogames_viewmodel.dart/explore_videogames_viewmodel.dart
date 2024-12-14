@@ -8,8 +8,7 @@ class ExploreVideogamesViewmodel extends StateNotifier<ExploreVideogamesState> {
   ExploreVideogamesViewmodel(this._exploreVideogamesUsecase)
       : super(ExploreVideogamesState.initial());
 
-  Future<Map<String, dynamic>> exploreVideogames(
-      int limit, int page, String filter) async {
+  Future<void> exploreVideogames(int limit, int page, String filter) async {
     try {
       state = state.copyWith(status: ExploreVideogamesStatus.loading);
 
@@ -23,10 +22,10 @@ class ExploreVideogamesViewmodel extends StateNotifier<ExploreVideogamesState> {
             errorMessage: failure.message,
           );
         },
-        (data) {
+        (videogames) {
           state = state.copyWith(
             status: ExploreVideogamesStatus.success,
-            videogames: data,
+            videogames: videogames,
           );
         },
       );
@@ -36,8 +35,6 @@ class ExploreVideogamesViewmodel extends StateNotifier<ExploreVideogamesState> {
         errorMessage: e.toString(),
       );
     }
-
-    return {'status': state.status, 'errorMessage': state.errorMessage};
   }
 
   void restart() {
