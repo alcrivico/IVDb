@@ -166,6 +166,10 @@ class ExploreVideogamesView extends HookConsumerWidget {
                                 videogame.criticAvgRating?.toInt() ?? 0,
                             publicAvgRating:
                                 videogame.publicAvgRating?.toInt() ?? 0,
+                            onPressed: () {
+                              print(
+                                  'Ver detalles del videojuego ${videogame.title}');
+                            },
                           );
                         },
                       )),
