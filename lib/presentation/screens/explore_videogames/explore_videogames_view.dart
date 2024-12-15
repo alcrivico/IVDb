@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:ivdb/domain/entities/user_entity.dart';
-import 'package:ivdb/presentation/viewmodels/explore_videogames_viewmodel.dart/explore_videogames_state.dart';
+import 'package:ivdb/presentation/viewmodels/explore_videogames/explore_videogames_state.dart';
 import 'package:ivdb/presentation/widgets/explore_videogames/videogame_card_box.dart';
 import 'package:ivdb/presentation/widgets/explore_videogames/videogames_filter_box.dart';
 import 'package:ivdb/presentation/widgets/shared/exit_door_box.dart';
 import 'package:ivdb/presentation/widgets/shared/home_box.dart';
-import 'package:ivdb/presentation/viewmodels/explore_videogames_viewmodel.dart/explore_videogames_viewmodel.dart';
+import 'package:ivdb/presentation/viewmodels/explore_videogames/explore_videogames_viewmodel.dart';
 
 class ExploreVideogamesView extends HookConsumerWidget {
   const ExploreVideogamesView({super.key, required this.user});
