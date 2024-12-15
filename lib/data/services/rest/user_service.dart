@@ -1,6 +1,7 @@
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:ivdb/core/exceptions/fail_exception.dart';
 import 'package:ivdb/data/models/application_model.dart';
+import 'package:ivdb/data/models/comment_model.dart';
 import 'rest_client.dart';
 import '../../models/user_model.dart';
 
@@ -234,7 +235,8 @@ class UserService implements IUserService {
 
     if (response.statusCode == 201) {
       final message = response.data['message'];
-      final comment = response.data['commentResponse'];
+      final CommentModel comment =
+          CommentModel.fromJson(response.data['comment']);
 
       return Map<String, dynamic>.from({
         'message': message,
