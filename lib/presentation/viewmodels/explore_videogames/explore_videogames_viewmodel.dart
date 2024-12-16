@@ -1,6 +1,6 @@
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:ivdb/domain/usecases/explore_videogames_usecase.dart';
-import 'package:ivdb/presentation/viewmodels/explore_videogames_viewmodel.dart/explore_videogames_state.dart';
+import 'package:ivdb/presentation/viewmodels/explore_videogames/explore_videogames_state.dart';
 
 class ExploreVideogamesViewmodel extends StateNotifier<ExploreVideogamesState> {
   final ExploreVideogamesUsecase _exploreVideogamesUsecase;
