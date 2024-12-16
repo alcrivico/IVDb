@@ -1,5 +1,9 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import '../../screens/videogame_details/videogame_details_view.dart';
+import 'package:ivdb/domain/entities/user_entity.dart';
+
+// Asegúrate de importar la clase de detalles
 
 class VideogameCardBox extends StatelessWidget {
   const VideogameCardBox({
@@ -9,20 +13,52 @@ class VideogameCardBox extends StatelessWidget {
     required this.imageData,
     required this.criticAvgRating,
     required this.publicAvgRating,
-    required this.onPressed,
+    required this.id,
+    required this.releaseDate,
+    required this.developers,
+    required this.genres,
+    required this.description,
+
+    required this.user
   });
+
+  final UserEntity user;
 
   final String title;
   final String platforms;
   final String imageData;
   final int criticAvgRating;
   final int publicAvgRating;
-  final VoidCallback onPressed;
+  final int id;
+  final DateTime releaseDate;
+  final String developers;
+  final String genres;
+  final String description;
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: onPressed,
+      onTap: () {
+        // Navegación a la pantalla de detalles
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => VideogameDetailsView(
+              title: title,
+              platforms: platforms,
+              imageData: imageData,
+              criticAvgRating: criticAvgRating,
+              publicAvgRating: publicAvgRating,
+              description: description,
+              id: id,
+              developers: developers,
+              releaseDate: releaseDate,
+              genres: genres,
+              user: user,
+            ),
+          ),
+        );
+      },
       child: Card(
         color: Colors.white,
         elevation: 10,
@@ -86,7 +122,7 @@ class VideogameCardBox extends StatelessWidget {
                                   const Icon(Icons.error),
                               filterQuality: FilterQuality.high,
                               isAntiAlias: true,
-                            ), // Mantén proporciones para la imagen
+                            ),
                           ),
                         ),
                       ),
@@ -132,7 +168,7 @@ class VideogameCardBox extends StatelessWidget {
                       ],
                     ),
                   ),
-                  const SizedBox(height: 10)
+                  const SizedBox(height: 10),
                 ],
               ),
             ],

@@ -50,7 +50,7 @@ class ExploreVideogamesView extends HookConsumerWidget {
       body: SingleChildScrollView(
         child: Center(
           child: Container(
-            constraints: BoxConstraints(maxWidth: 1280),
+            constraints: const BoxConstraints(maxWidth: 1280),
             margin: const EdgeInsets.all(20),
             child: Column(
               children: [
@@ -66,7 +66,7 @@ class ExploreVideogamesView extends HookConsumerWidget {
                             color: Color(0xff1971c2))),
                     const SizedBox(width: 10),
                     if (user.roleId == 1)
-                      Icon(
+                      const Icon(
                         Icons.key,
                         color: Color.fromARGB(255, 194, 25, 25),
                       ),
@@ -78,7 +78,7 @@ class ExploreVideogamesView extends HookConsumerWidget {
                             print('Evaluar solicitudes de usuarios');
                           }),
                     if (user.roleId == 2)
-                      Icon(
+                      const Icon(
                         Icons.person,
                         color: Color(0xff1971c2),
                       ),
@@ -90,7 +90,7 @@ class ExploreVideogamesView extends HookConsumerWidget {
                             print('Solicitar privilegio de critico');
                           }),
                     if (user.roleId == 3)
-                      Icon(
+                      const Icon(
                         Icons.star,
                         color: Color.fromARGB(255, 194, 186, 25),
                       ),
@@ -105,9 +105,7 @@ class ExploreVideogamesView extends HookConsumerWidget {
                         shrinkWrap: true,
                         physics: const NeverScrollableScrollPhysics(),
                         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: size.width > 490
-                              ? 4
-                              : 2, // Cambia las columnas dinámicamente
+                          crossAxisCount: size.width > 490 ? 4 : 2,
                           crossAxisSpacing: 2,
                           mainAxisSpacing: 2,
                           childAspectRatio: 2,
@@ -142,7 +140,7 @@ class ExploreVideogamesView extends HookConsumerWidget {
                         },
                         icon: const Icon(Icons.add),
                         tooltip: 'Agregar Videojuego',
-                        color: Color(0xff1971c2),
+                        color: const Color(0xff1971c2),
                         visualDensity: VisualDensity.compact,
                       )
                   ],
@@ -159,34 +157,38 @@ class ExploreVideogamesView extends HookConsumerWidget {
                   Text(exploreVideogamesState.errorMessage.toString())
                 else
                   SizedBox(
-                      height: size.height * 0.9,
-                      child: GridView.builder(
-                        shrinkWrap: true,
-                        physics: const ScrollPhysics(),
-                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: crossAxisCount,
-                            crossAxisSpacing: 10,
-                            mainAxisSpacing: 10,
-                            childAspectRatio: 3 / 4),
-                        itemCount: exploreVideogamesState.videogames!.length,
-                        itemBuilder: (context, index) {
-                          final videogame =
-                              exploreVideogamesState.videogames![index];
-                          return VideogameCardBox(
-                            title: videogame.title,
-                            platforms: videogame.platforms!,
-                            imageData: videogame.imageData!,
-                            criticAvgRating:
-                                videogame.criticAvgRating?.toInt() ?? 0,
-                            publicAvgRating:
-                                videogame.publicAvgRating?.toInt() ?? 0,
-                            onPressed: () {
-                              print(
-                                  'Ver detalles del videojuego ${videogame.title}');
-                            },
-                          );
-                        },
-                      )),
+                    height: size.height * 0.9,
+                    child: GridView.builder(
+                      shrinkWrap: true,
+                      physics: const ScrollPhysics(),
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: crossAxisCount,
+                          crossAxisSpacing: 10,
+                          mainAxisSpacing: 10,
+                          childAspectRatio: 3 / 4),
+                      itemCount: exploreVideogamesState.videogames!.length,
+                      itemBuilder: (context, index) {
+                        final videogame =
+                            exploreVideogamesState.videogames![index];
+                        return VideogameCardBox(
+                          title: videogame.title,
+                          description: videogame.description,
+                          id: videogame.id,
+                          releaseDate: videogame.releaseDate,
+                          developers: videogame.developers!,
+                          genres: videogame.genres!,
+                          platforms: videogame.platforms!,
+                          imageData: videogame.imageData!, 
+                          criticAvgRating:
+                              videogame.criticAvgRating?.toInt() ?? 0,
+                          publicAvgRating:
+                              videogame.publicAvgRating?.toInt() ?? 0,
+                          
+                          user: user,
+                        );
+                      },
+                    ),
+                  ),
               ],
             ),
           ),
@@ -195,3 +197,4 @@ class ExploreVideogamesView extends HookConsumerWidget {
     );
   }
 }
+
