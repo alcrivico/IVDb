@@ -35,12 +35,12 @@ abstract class IVideogameRepository {
       String title,
       String releaseDate,
       String newTitle,
-      DateTime newReleaseDate,
       String newDescription,
+      DateTime newReleaseDate,
       String newImageRoute,
       String newDevelopers,
-      String newPlatforms,
-      String newGenres);
+      String newGenres,
+      String newPlatforms);
 
   Future<Either<FailException, Map<String, dynamic>>> deleteVideogame(
       String title, DateTime releaseDate);

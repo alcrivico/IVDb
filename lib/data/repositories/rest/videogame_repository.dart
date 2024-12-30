@@ -130,23 +130,23 @@ class VideogameRepository implements IVideogameRepository {
       String title,
       String releaseDate,
       String newTitle,
-      DateTime newReleaseDate,
       String newDescription,
+      DateTime newReleaseDate,
       String newImageRoute,
       String newDevelopers,
-      String newPlatforms,
-      String newGenres) async {
+      String newGenres,
+      String newPlatforms) async {
     try {
       final result = await _videogameService.updateVideogame(
           title,
           releaseDate,
           newTitle,
-          newReleaseDate,
           newDescription,
+          newReleaseDate,
           newImageRoute,
           newDevelopers,
-          newPlatforms,
-          newGenres);
+          newGenres,
+          newPlatforms);
 
       final videogame = result['videogame'] as VideogameModel;
 

@@ -35,12 +35,12 @@ abstract class IVideogameService {
       String title,
       String releaseDate,
       String newTitle,
-      DateTime newReleaseDate,
       String newDescription,
+      DateTime newReleaseDate,
       String newImageRoute,
       String newDevelopers,
-      String newPlatforms,
-      String newGenres);
+      String newGenres,
+      String newPlatforms);
 
   Future<Map<String, dynamic>> deleteVideogame(
       String title, DateTime releaseDate);
@@ -192,12 +192,12 @@ class VideogameService implements IVideogameService {
       String title,
       String releaseDate,
       String newTitle,
-      DateTime newReleaseDate,
       String newDescription,
+      DateTime newReleaseDate,
       String newImageRoute,
       String newDevelopers,
-      String newPlatforms,
-      String newGenres) async {
+      String newGenres,
+      String newPlatforms) async {
     final data = {
       'title': title,
       'releaseDate': releaseDate,
@@ -206,8 +206,8 @@ class VideogameService implements IVideogameService {
       'newReleaseDate': newReleaseDate,
       'newImageRoute': newImageRoute,
       'newDevelopers': newDevelopers,
+      'newGenres': newGenres,
       'newPlatforms': newPlatforms,
-      'newGenres': newGenres
     };
 
     final response =
