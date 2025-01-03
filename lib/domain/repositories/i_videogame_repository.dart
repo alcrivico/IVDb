@@ -5,7 +5,7 @@ import 'package:ivdb/domain/entities/videogame_entity.dart';
 
 abstract class IVideogameRepository {
   Future<Either<FailException, VideogameEntity>> showVideogame(
-      String title, String releaseDate);
+      String title, DateTime releaseDate);
 
   Future<Either<FailException, List<VideogameEntity>>> showVideogamesList(
       {required int limit, required int page, required String filter});

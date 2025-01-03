@@ -17,7 +17,7 @@ class VideogameRepository implements IVideogameRepository {
 
   @override
   Future<Either<FailException, VideogameEntity>> showVideogame(
-      String title, String releaseDate) async {
+      String title, DateTime releaseDate) async {
     try {
       final result = await _videogameService.showVideogame(title, releaseDate);
 

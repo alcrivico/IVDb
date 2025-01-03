@@ -5,7 +5,7 @@ import 'package:ivdb/data/models/videogame_model.dart';
 import 'rest_client.dart';
 
 abstract class IVideogameService {
-  Future<VideogameModel> showVideogame(String title, String releaseDate);
+  Future<VideogameModel> showVideogame(String title, DateTime releaseDate);
 
   Future<List<VideogameModel>> showVideogamesList(
       {required int limit, required int page, required String filter});
@@ -52,9 +52,10 @@ class VideogameService implements IVideogameService {
   final RestClient restClient;
 
   @override
-  Future<VideogameModel> showVideogame(String title, String releaseDate) async {
-    final response =
-        await restClient.dio.post('/videogame/single/$title/$releaseDate');
+  Future<VideogameModel> showVideogame(
+      String title, DateTime releaseDate) async {
+    final response = await restClient.dio
+        .post('/videogame/single/$title/${releaseDate.toIso8601String()}');
 
     if (response.statusCode == 200) {
       final videogame = VideogameModel.fromJson(response.data);
