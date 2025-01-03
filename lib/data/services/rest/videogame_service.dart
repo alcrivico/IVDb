@@ -11,13 +11,13 @@ abstract class IVideogameService {
       {required int limit, required int page, required String filter});
 
   Future<CommentModel> showUserComment(
-      String title, String releaseDate, String email);
+      String title, DateTime releaseDate, String email);
 
   Future<List<CommentModel>> showCriticComments(
-      String title, String releaseDate);
+      String title, DateTime releaseDate);
 
   Future<List<CommentModel>> showPublicComments(
-      String title, String releaseDate);
+      String title, DateTime releaseDate);
 
   Future<CommentModel> hideComment(
       bool value, String title, DateTime releaseDate, String email);
@@ -33,7 +33,7 @@ abstract class IVideogameService {
 
   Future<Map<String, dynamic>> updateVideogame(
       String title,
-      String releaseDate,
+      DateTime releaseDate,
       String newTitle,
       String newDescription,
       DateTime newReleaseDate,
@@ -84,11 +84,11 @@ class VideogameService implements IVideogameService {
 
   @override
   Future<CommentModel> showUserComment(
-      String title, String releaseDate, String email) async {
+      String title, DateTime releaseDate, String email) async {
     final data = {
       'email': email,
       'title': title,
-      'releaseDate': releaseDate,
+      'releaseDate': releaseDate.toIso8601String(),
     };
 
     final response =
@@ -105,8 +105,14 @@ class VideogameService implements IVideogameService {
 
   @override
   Future<List<CommentModel>> showCriticComments(
-      String title, String releaseDate) async {
-    final response = await restClient.dio.get('/videogame/comments/critic');
+      String title, DateTime releaseDate) async {
+    final data = {
+      'title': title,
+      'releaseDate': releaseDate.toIso8601String(),
+    };
+
+    final response =
+        await restClient.dio.get('/videogame/comments/critic', data: data);
 
     if (response.statusCode == 200) {
       final comments = response.data
@@ -121,8 +127,14 @@ class VideogameService implements IVideogameService {
 
   @override
   Future<List<CommentModel>> showPublicComments(
-      String title, String releaseDate) async {
-    final response = await restClient.dio.get('/videogame/comments/public');
+      String title, DateTime releaseDate) async {
+    final data = {
+      'title': title,
+      'releaseDate': releaseDate.toIso8601String(),
+    };
+
+    final response =
+        await restClient.dio.get('/videogame/comments/public', data: data);
 
     if (response.statusCode == 200) {
       final comments = response.data
@@ -141,7 +153,7 @@ class VideogameService implements IVideogameService {
     final data = {
       'value': value,
       'title': title,
-      'releaseDate': releaseDate,
+      'releaseDate': releaseDate.toIso8601String(),
       'email': email,
     };
 
@@ -169,7 +181,7 @@ class VideogameService implements IVideogameService {
     final data = {
       'title': title,
       'description': description,
-      'releaseDate': releaseDate,
+      'releaseDate': releaseDate.toIso8601String(),
       'imageRoute': imageRoute,
       'developers': developers,
       'platforms': platforms,
@@ -190,7 +202,7 @@ class VideogameService implements IVideogameService {
   @override
   Future<Map<String, dynamic>> updateVideogame(
       String title,
-      String releaseDate,
+      DateTime releaseDate,
       String newTitle,
       String newDescription,
       DateTime newReleaseDate,
@@ -200,10 +212,10 @@ class VideogameService implements IVideogameService {
       String newPlatforms) async {
     final data = {
       'title': title,
-      'releaseDate': releaseDate,
+      'releaseDate': releaseDate.toIso8601String(),
       'newTitle': newTitle,
       'newDescription': newDescription,
-      'newReleaseDate': newReleaseDate,
+      'newReleaseDate': newReleaseDate.toIso8601String(),
       'newImageRoute': newImageRoute,
       'newDevelopers': newDevelopers,
       'newGenres': newGenres,
@@ -231,7 +243,7 @@ class VideogameService implements IVideogameService {
       String title, DateTime releaseDate) async {
     final data = {
       'title': title,
-      'releaseDate': releaseDate,
+      'releaseDate': releaseDate.toIso8601String(),
     };
 
     final response =

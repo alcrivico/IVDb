@@ -46,7 +46,7 @@ class VideogameRepository implements IVideogameRepository {
 
   @override
   Future<Either<FailException, CommentEntity>> showUserComment(
-      String title, String releaseDate, String email) async {
+      String title, DateTime releaseDate, String email) async {
     try {
       final result =
           await _videogameService.showUserComment(title, releaseDate, email);
@@ -61,7 +61,7 @@ class VideogameRepository implements IVideogameRepository {
 
   @override
   Future<Either<FailException, List<CommentEntity>>> showCriticComments(
-      String title, String releaseDate) async {
+      String title, DateTime releaseDate) async {
     try {
       final result =
           await _videogameService.showCriticComments(title, releaseDate);
@@ -76,7 +76,7 @@ class VideogameRepository implements IVideogameRepository {
 
   @override
   Future<Either<FailException, List<CommentEntity>>> showPublicComments(
-      String title, String releaseDate) async {
+      String title, DateTime releaseDate) async {
     try {
       final result =
           await _videogameService.showPublicComments(title, releaseDate);
@@ -128,7 +128,7 @@ class VideogameRepository implements IVideogameRepository {
   @override
   Future<Either<FailException, Map<String, dynamic>>> updateVideogame(
       String title,
-      String releaseDate,
+      DateTime releaseDate,
       String newTitle,
       String newDescription,
       DateTime newReleaseDate,

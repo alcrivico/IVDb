@@ -11,13 +11,13 @@ abstract class IVideogameRepository {
       {required int limit, required int page, required String filter});
 
   Future<Either<FailException, CommentEntity>> showUserComment(
-      String title, String releaseDate, String email);
+      String title, DateTime releaseDate, String email);
 
   Future<Either<FailException, List<CommentEntity>>> showCriticComments(
-      String title, String releaseDate);
+      String title, DateTime releaseDate);
 
   Future<Either<FailException, List<CommentEntity>>> showPublicComments(
-      String title, String releaseDate);
+      String title, DateTime releaseDate);
 
   Future<Either<FailException, CommentEntity>> hideComment(
       bool value, String title, DateTime releaseDate, String email);
@@ -33,7 +33,7 @@ abstract class IVideogameRepository {
 
   Future<Either<FailException, Map<String, dynamic>>> updateVideogame(
       String title,
-      String releaseDate,
+      DateTime releaseDate,
       String newTitle,
       String newDescription,
       DateTime newReleaseDate,
