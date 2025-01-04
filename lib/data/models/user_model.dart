@@ -1,3 +1,5 @@
+import 'package:ivdb/data/models/role_model.dart';
+
 class UserModel {
   final int id;
   final String username;
@@ -5,6 +7,7 @@ class UserModel {
   final String password;
   final String profileRoute;
   final int? roleId;
+  final RoleModel? role;
 
   UserModel({
     required this.id,
@@ -13,6 +16,7 @@ class UserModel {
     required this.password,
     required this.profileRoute,
     this.roleId,
+    this.role,
   });
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
@@ -23,6 +27,7 @@ class UserModel {
       password: json['password'],
       profileRoute: json['profileRoute'],
       roleId: json['roleId'],
+      role: json['role'] != null ? RoleModel.fromJson(json['role']) : null,
     );
   }
 
@@ -34,6 +39,7 @@ class UserModel {
       'password': password,
       'profileRoute': profileRoute,
       'roleId': roleId,
+      'role': role?.toJson(),
     };
   }
 }
