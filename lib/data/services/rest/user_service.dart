@@ -198,7 +198,7 @@ class UserService implements IUserService {
     final data = {
       'email': email,
       'title': title,
-      'releaseDate': releaseDate,
+      'releaseDate': releaseDate.toIso8601String(),
       'rate': rate,
     };
 
@@ -227,7 +227,7 @@ class UserService implements IUserService {
     final data = {
       'email': email,
       'title': title,
-      'releaseDate': releaseDate,
+      'releaseDate': releaseDate.toIso8601String(),
       'comment': comment,
     };
 
