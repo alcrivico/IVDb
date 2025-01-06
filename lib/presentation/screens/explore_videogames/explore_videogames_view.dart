@@ -10,7 +10,7 @@ import 'package:ivdb/presentation/widgets/shared/home_box.dart';
 import 'package:ivdb/presentation/viewmodels/explore_videogames/explore_videogames_viewmodel.dart';
 
 class ExploreVideogamesView extends HookConsumerWidget {
-  const ExploreVideogamesView({super.key, required this.user});
+  const ExploreVideogamesView(this.user, {super.key});
 
   final UserEntity user;
 
@@ -41,7 +41,7 @@ class ExploreVideogamesView extends HookConsumerWidget {
               context,
               MaterialPageRoute(
                   builder: (context) => ExploreVideogamesView(
-                        user: user,
+                        user,
                       )),
             );
           },
@@ -81,7 +81,7 @@ class ExploreVideogamesView extends HookConsumerWidget {
                               context,
                               MaterialPageRoute(
                                 builder: (context) =>
-                                    const ShowApplicationsView(),
+                                    ShowApplicationsView(user),
                               ),
                             );
                           }),

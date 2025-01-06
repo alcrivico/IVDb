@@ -1,12 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:ivdb/domain/entities/application_entity.dart';
+import 'package:ivdb/domain/entities/user_entity.dart';
+import 'package:ivdb/presentation/screens/explore_videogames/explore_videogames_view.dart';
 import 'package:ivdb/presentation/viewmodels/show_applications/show_application_viewmodel.dart';
 import 'package:ivdb/presentation/viewmodels/show_applications/show_application_state.dart';
 import 'package:ivdb/presentation/screens/evaluate_application/evaluate_application_view.dart';
+import 'package:ivdb/presentation/widgets/shared/exit_door_box.dart';
+import 'package:ivdb/presentation/widgets/shared/home_box.dart';
 
 class ShowApplicationsView extends ConsumerWidget {
-  const ShowApplicationsView({Key? key}) : super(key: key);
+  final UserEntity user;
+
+  const ShowApplicationsView(
+    this.user, {
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -15,7 +24,18 @@ class ShowApplicationsView extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Consultar Solicitudes'),
+        title: HomeBox(
+          onPressed: () {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => ExploreVideogamesView(
+                        user,
+                      )),
+            );
+          },
+        ),
+        actions: [ExitDoorBox()],
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -66,7 +86,7 @@ class ShowApplicationsView extends ConsumerWidget {
                                       ElevatedButton(
                                         onPressed: () {
                                           _showApplicationDetails(
-                                              context, application);
+                                              context, application, user);
                                         },
                                         child: const Text('Consultar'),
                                       ),
@@ -84,11 +104,12 @@ class ShowApplicationsView extends ConsumerWidget {
   }
 
   void _showApplicationDetails(
-      BuildContext context, ApplicationEntity application) {
+      BuildContext context, ApplicationEntity application, UserEntity user) {
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(
-        builder: (context) => EvaluateApplicationView(application: application),
+        builder: (context) =>
+            EvaluateApplicationView(application: application, user: user),
       ),
     );
   }

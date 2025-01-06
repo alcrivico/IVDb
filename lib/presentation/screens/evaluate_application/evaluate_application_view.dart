@@ -1,14 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:ivdb/domain/entities/application_entity.dart';
+import 'package:ivdb/domain/entities/user_entity.dart';
+import 'package:ivdb/presentation/screens/explore_videogames/explore_videogames_view.dart';
 import 'package:ivdb/presentation/screens/show_applications/show_applications_view.dart';
 import 'package:ivdb/presentation/viewmodels/evaluate_application/evaluate_application_viewmodel.dart';
+import 'package:ivdb/presentation/widgets/shared/exit_door_box.dart';
+import 'package:ivdb/presentation/widgets/shared/home_box.dart';
 
 class EvaluateApplicationView extends ConsumerWidget {
   final ApplicationEntity application;
 
-  const EvaluateApplicationView({Key? key, required this.application})
-      : super(key: key);
+  final UserEntity user;
+
+  const EvaluateApplicationView(
+      {super.key, required this.application, required this.user});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -16,18 +22,34 @@ class EvaluateApplicationView extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Evaluar Solicitud'),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => Navigator.pushReplacement(context,
-              MaterialPageRoute(builder: (context) => ShowApplicationsView())),
+        title: HomeBox(
+          onPressed: () {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => ExploreVideogamesView(
+                        user,
+                      )),
+            );
+          },
         ),
+        actions: [ExitDoorBox()],
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            IconButton(
+                onPressed: () {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => ShowApplicationsView(user)),
+                  );
+                },
+                icon: Icon(Icons.arrow_back)),
+            const SizedBox(height: 16),
             // Mostrar afiliación y motivo
             Text(
               'Afiliación: ${application.request ?? 'Sin afiliación'}',
@@ -51,7 +73,7 @@ class EvaluateApplicationView extends ConsumerWidget {
                     Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => ShowApplicationsView(),
+                        builder: (context) => ShowApplicationsView(user),
                       ),
                     );
                   },
@@ -66,7 +88,7 @@ class EvaluateApplicationView extends ConsumerWidget {
                     Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => ShowApplicationsView(),
+                        builder: (context) => ShowApplicationsView(user),
                       ),
                     );
                   },

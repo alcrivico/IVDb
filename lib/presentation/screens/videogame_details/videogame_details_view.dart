@@ -3,6 +3,9 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:ivdb/domain/entities/user_entity.dart';
+import 'package:ivdb/presentation/screens/explore_videogames/explore_videogames_view.dart';
+import 'package:ivdb/presentation/widgets/shared/exit_door_box.dart';
+import 'package:ivdb/presentation/widgets/shared/home_box.dart';
 import 'package:ivdb/presentation/widgets/show_comments/comment_card_box.dart';
 import 'package:ivdb/domain/usecases/show_comments_usecase.dart';
 
@@ -47,8 +50,18 @@ class VideogameDetailsView extends HookConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(title),
-        backgroundColor: const Color(0xff1971c2),
+        title: HomeBox(
+          onPressed: () {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => ExploreVideogamesView(
+                        user,
+                      )),
+            );
+          },
+        ),
+        actions: [ExitDoorBox()],
       ),
       body: SingleChildScrollView(
         child: Padding(
