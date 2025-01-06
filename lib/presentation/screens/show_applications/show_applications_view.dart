@@ -5,7 +5,6 @@ import 'package:ivdb/presentation/viewmodels/show_applications/show_application_
 import 'package:ivdb/presentation/viewmodels/show_applications/show_application_state.dart';
 import 'package:ivdb/presentation/screens/evaluate_application/evaluate_application_view.dart';
 
-
 class ShowApplicationsView extends ConsumerWidget {
   const ShowApplicationsView({Key? key}) : super(key: key);
 
@@ -40,6 +39,7 @@ class ShowApplicationsView extends ConsumerWidget {
                         child: DataTable(
                           columns: const [
                             DataColumn(label: Text('ID Solicitud')),
+                            DataColumn(label: Text('Correo Electrónico')),
                             DataColumn(label: Text('Descripción')),
                             DataColumn(label: Text('Fecha')),
                             DataColumn(label: Text('Estado')),
@@ -49,15 +49,19 @@ class ShowApplicationsView extends ConsumerWidget {
                                 return DataRow(
                                   cells: [
                                     DataCell(Text(application.id.toString())),
-                                    DataCell(Text(application.request ?? 'N/A')),
+                                    DataCell(Text(application.email ?? 'N/A')),
+                                    DataCell(
+                                        Text(application.request ?? 'N/A')),
                                     DataCell(Text(
                                         application.requestDate != null
                                             ? application.requestDate
                                                 .toString()
-                                                .substring(0, 10) // Formato de fecha
+                                                .substring(
+                                                    0, 10) // Formato de fecha
                                             : 'Sin fecha')),
-                                    DataCell(Text(
-                                        application.state ? 'Aprobada' : 'Pendiente')),
+                                    DataCell(Text(application.state
+                                        ? 'Aprobada'
+                                        : 'Pendiente')),
                                     DataCell(
                                       ElevatedButton(
                                         onPressed: () {
@@ -79,15 +83,13 @@ class ShowApplicationsView extends ConsumerWidget {
     );
   }
 
-  void _showApplicationDetails(BuildContext context, ApplicationEntity application) {
-  Navigator.push(
-    context,
-    MaterialPageRoute(
-      builder: (context) => EvaluateApplicationView(application: application),
-    ),
-  );
-  
-  
-}
-
+  void _showApplicationDetails(
+      BuildContext context, ApplicationEntity application) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => EvaluateApplicationView(application: application),
+      ),
+    );
+  }
 }

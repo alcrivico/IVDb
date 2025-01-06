@@ -43,7 +43,8 @@ class EvaluateApplicationView extends ConsumerWidget {
               children: [
                 ElevatedButton(
                   onPressed: () {
-                    viewModel.evaluateApplication(application.email ?? '', false);
+                    viewModel.evaluateApplication(
+                        application.email ?? '', false);
                     Navigator.pop(context);
                   },
                   style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
@@ -51,10 +52,12 @@ class EvaluateApplicationView extends ConsumerWidget {
                 ),
                 ElevatedButton(
                   onPressed: () {
-                    viewModel.evaluateApplication(application.email ?? '', true);
+                    viewModel.evaluateApplication(
+                        application.email ?? '', true);
                     Navigator.pop(context);
                   },
-                  style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
+                  style:
+                      ElevatedButton.styleFrom(backgroundColor: Colors.green),
                   child: const Text('Aprobar'),
                 ),
               ],
