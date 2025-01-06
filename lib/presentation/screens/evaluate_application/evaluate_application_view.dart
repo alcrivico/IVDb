@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:ivdb/domain/entities/application_entity.dart';
+import 'package:ivdb/presentation/screens/show_applications/show_applications_view.dart';
 import 'package:ivdb/presentation/viewmodels/evaluate_application/evaluate_application_viewmodel.dart';
 
 class EvaluateApplicationView extends ConsumerWidget {
@@ -42,21 +43,33 @@ class EvaluateApplicationView extends ConsumerWidget {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 ElevatedButton(
-                  onPressed: () {
-                    viewModel.evaluateApplication(application.email ?? '', false);
-                    Navigator.pop(context);
-                  },
-                  style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-                  child: const Text('Rechazar'),
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    viewModel.evaluateApplication(application.email ?? '', true);
-                    Navigator.pop(context);
-                  },
-                  style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
-                  child: const Text('Aprobar'),
-                ),
+      onPressed: () {
+      viewModel.evaluateApplication(application.email ?? '', false);
+
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => ShowApplicationsView(), 
+        ),
+      );
+    },
+    style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+    child: const Text('Rechazar'),
+  ),
+  ElevatedButton(
+    onPressed: () {
+      viewModel.evaluateApplication(application.email ?? '', true);
+
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => ShowApplicationsView(), 
+        ),
+      );
+    },
+    style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
+    child: const Text('Aprobar'),
+  ),
               ],
             ),
           ],
