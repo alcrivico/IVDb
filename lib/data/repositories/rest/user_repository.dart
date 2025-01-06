@@ -122,24 +122,24 @@ class UserRepository implements IUserRepository {
   }
 
   @override
-Future<Either<FailException, ApplicationEntity>> evaluateApplication(
-    String email, bool state) async {
-  try {
-    final result = await _userService.evaluateApplication(email, state);
-    
-    // Log para verificar la respuesta del servicio
-    print('Respuesta de evaluateApplication en UserService: ${result.toJson()}');
+  Future<Either<FailException, ApplicationEntity>> evaluateApplication(
+      String email, bool state) async {
+    try {
+      final result = await _userService.evaluateApplication(email, state);
 
-    return Right(result.toEntity());
-  } on DioException catch (e) {
-    print('Error de DioException: ${e.response?.data}');
-    return Left(ServerException(e.response?.data['message']));
-  } catch (e) {
-    print('Error desconocido: $e');
-    return Left(ServerException(e.toString()));
+      // Log para verificar la respuesta del servicio
+      print(
+          'Respuesta de evaluateApplication en UserService: ${result.toJson()}');
+
+      return Right(result.toEntity());
+    } on DioException catch (e) {
+      print('Error de DioException: ${e.response?.data}');
+      return Left(ServerException(e.response?.data['message']));
+    } catch (e) {
+      print('Error desconocido: $e');
+      return Left(ServerException(e.toString()));
+    }
   }
-}
-
 
   @override
   Future<Either<FailException, Map<String, dynamic>>> uploadRating(
@@ -176,7 +176,7 @@ Future<Either<FailException, ApplicationEntity>> evaluateApplication(
       String email) async {
     try {
       final response = await _userService.getUserRatings(email);
-      final ratings = (response as List)
+      final ratings = (response)
           .map((rating) => RatingModel.fromJson(rating).toEntity())
           .toList();
       return Right(ratings);
