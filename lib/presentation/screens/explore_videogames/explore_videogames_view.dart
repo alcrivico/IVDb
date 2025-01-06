@@ -77,10 +77,11 @@ class ExploreVideogamesView extends HookConsumerWidget {
                           child: const Text('Evaluar Usuarios'),
                           onPressed: () {
                             // Navegar a la pantalla de evaluación de usuarios
-                            Navigator.push(
+                            Navigator.pushReplacement(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => const ShowApplicationsView(),
+                                builder: (context) =>
+                                    const ShowApplicationsView(),
                               ),
                             );
                           }),
@@ -185,12 +186,11 @@ class ExploreVideogamesView extends HookConsumerWidget {
                           developers: videogame.developers!,
                           genres: videogame.genres!,
                           platforms: videogame.platforms!,
-                          imageData: videogame.imageData!, 
+                          imageData: videogame.imageData!,
                           criticAvgRating:
                               videogame.criticAvgRating?.toInt() ?? 0,
                           publicAvgRating:
                               videogame.publicAvgRating?.toInt() ?? 0,
-                          
                           user: user,
                         );
                       },
@@ -204,4 +204,3 @@ class ExploreVideogamesView extends HookConsumerWidget {
     );
   }
 }
-

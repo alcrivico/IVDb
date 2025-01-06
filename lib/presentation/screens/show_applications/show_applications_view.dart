@@ -85,7 +85,7 @@ class ShowApplicationsView extends ConsumerWidget {
 
   void _showApplicationDetails(
       BuildContext context, ApplicationEntity application) {
-    Navigator.push(
+    Navigator.pushReplacement(
       context,
       MaterialPageRoute(
         builder: (context) => EvaluateApplicationView(application: application),

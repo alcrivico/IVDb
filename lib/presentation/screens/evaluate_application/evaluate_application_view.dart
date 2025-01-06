@@ -19,7 +19,8 @@ class EvaluateApplicationView extends ConsumerWidget {
         title: const Text('Evaluar Solicitud'),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
-          onPressed: () => Navigator.pop(context),
+          onPressed: () => Navigator.pushReplacement(context,
+              MaterialPageRoute(builder: (context) => ShowApplicationsView())),
         ),
       ),
       body: Padding(
@@ -43,33 +44,36 @@ class EvaluateApplicationView extends ConsumerWidget {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 ElevatedButton(
-      onPressed: () {
-      viewModel.evaluateApplication(application.email ?? '', false);
+                  onPressed: () {
+                    viewModel.evaluateApplication(
+                        application.email ?? '', false);
 
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) => ShowApplicationsView(), 
-        ),
-      );
-    },
-    style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-    child: const Text('Rechazar'),
-  ),
-  ElevatedButton(
-    onPressed: () {
-      viewModel.evaluateApplication(application.email ?? '', true);
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ShowApplicationsView(),
+                      ),
+                    );
+                  },
+                  style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+                  child: const Text('Rechazar'),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    viewModel.evaluateApplication(
+                        application.email ?? '', true);
 
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) => ShowApplicationsView(), 
-        ),
-      );
-    },
-    style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
-    child: const Text('Aprobar'),
-  ),
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ShowApplicationsView(),
+                      ),
+                    );
+                  },
+                  style:
+                      ElevatedButton.styleFrom(backgroundColor: Colors.green),
+                  child: const Text('Aprobar'),
+                ),
               ],
             ),
           ],
