@@ -32,4 +32,6 @@ abstract class IUserRepository {
 
   Future<Either<FailException, Map<String, dynamic>>> uploadComment(
       String email, String title, DateTime releaseDate, String comment);
+
+    
 }

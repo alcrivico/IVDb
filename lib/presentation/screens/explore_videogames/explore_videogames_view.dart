@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:ivdb/domain/entities/user_entity.dart';
+import 'package:ivdb/presentation/screens/show_applications/show_applications_view.dart';
 import 'package:ivdb/presentation/viewmodels/explore_videogames/explore_videogames_state.dart';
 import 'package:ivdb/presentation/widgets/explore_videogames/videogame_card_box.dart';
 import 'package:ivdb/presentation/widgets/explore_videogames/videogames_filter_box.dart';
@@ -75,7 +76,13 @@ class ExploreVideogamesView extends HookConsumerWidget {
                       TextButton(
                           child: const Text('Evaluar Usuarios'),
                           onPressed: () {
-                            print('Evaluar solicitudes de usuarios');
+                            // Navegar a la pantalla de evaluación de usuarios
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const ShowApplicationsView(),
+                              ),
+                            );
                           }),
                     if (user.roleId == 2)
                       Icon(
