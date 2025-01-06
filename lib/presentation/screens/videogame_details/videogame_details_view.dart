@@ -172,6 +172,55 @@ class VideogameDetailsView extends HookConsumerWidget {
                 )
                 :const SizedBox.shrink(),
               ),
+
+              const SizedBox(height: 8), 
+
+              //Boton actualizar
+              Align(
+                alignment: Alignment.bottomCenter,
+                child: sessionRole == 1 ?
+                TextButton(onPressed: (){
+                  print("Boton actualizar videojuego pulsado");
+                },
+                style: TextButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  backgroundColor: const Color(0xff1971c2),
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8)
+                  ),
+                ),
+                child: const Text(
+                  "Actualizar videojuego",
+                  style: TextStyle(fontSize: 14, color: Colors.white),
+                  ),
+                )
+                :const SizedBox.shrink(),
+              ),
+
+              //Boton calificar
+              Align(
+                alignment: Alignment.bottomCenter,
+                child: sessionRole == 2 ?
+                TextButton(onPressed: (){
+                  print("Boton calificar videojuego pulsado");
+                },
+                style: TextButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  backgroundColor: const Color(0xff1971c2),
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8)
+                  ),
+                ),
+                child: const Text(
+                  "Calificar videojuego",
+                  style: TextStyle(fontSize: 14, color: Colors.white),
+                  ),
+                )
+                :const SizedBox.shrink(),
+              ),
+
               // Mostrar comentarios
               const SizedBox(height: 20),
               FutureBuilder(
