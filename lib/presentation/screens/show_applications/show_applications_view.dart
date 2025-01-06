@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:ivdb/domain/entities/application_entity.dart'; // Nota: Asegúrate de importar la entidad correcta
+import 'package:ivdb/domain/entities/application_entity.dart';
 import 'package:ivdb/presentation/viewmodels/show_applications/show_application_viewmodel.dart';
 import 'package:ivdb/presentation/viewmodels/show_applications/show_application_state.dart';
+import 'package:ivdb/presentation/screens/evaluate_application/evaluate_application_view.dart';
+
 
 class ShowApplicationsView extends ConsumerWidget {
   const ShowApplicationsView({Key? key}) : super(key: key);
@@ -77,30 +79,15 @@ class ShowApplicationsView extends ConsumerWidget {
     );
   }
 
-  /// Muestra detalles de una solicitud seleccionada
   void _showApplicationDetails(BuildContext context, ApplicationEntity application) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Detalles de la Solicitud'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('ID: ${application.id}'),
-            Text('Descripción: ${application.request ?? 'N/A'}'),
-            Text('Fecha: ${application.requestDate?.toString().substring(0, 10) ?? 'Sin fecha'}'),
-            Text('Estado: ${application.state ? 'Aprobada' : 'Pendiente'}'),
-            const SizedBox(height: 16),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Cerrar'),
-          ),
-        ],
-      ),
-    );
-  }
+  Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (context) => EvaluateApplicationView(application: application),
+    ),
+  );
+  
+  
+}
+
 }
