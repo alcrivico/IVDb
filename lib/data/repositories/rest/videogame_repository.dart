@@ -164,12 +164,10 @@ class VideogameRepository implements IVideogameRepository {
   Future<Either<FailException, Map<String, dynamic>>> deleteVideogame(
       String title, DateTime releaseDate) async {
     try {
-      final result =
-          await _videogameService.deleteVideogame(title, releaseDate);
-
+      final result = await _videogameService.deleteVideogame(title, releaseDate);
       return Right(result);
     } on DioException catch (e) {
-      return Left(ServerException(e.response?.data['message']));
+      return Left(ServerException(e.response?.data['message'] ?? 'Error al eliminar'));
     } catch (e) {
       return Left(ServerException(e.toString()));
     }

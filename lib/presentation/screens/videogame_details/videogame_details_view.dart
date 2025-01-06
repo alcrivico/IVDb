@@ -3,8 +3,11 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:ivdb/domain/entities/user_entity.dart';
+import 'package:ivdb/presentation/viewmodels/delete_videogames/delete_videogames_viewmodel.dart';
 import 'package:ivdb/presentation/widgets/show_comments/comment_card_box.dart';
 import 'package:ivdb/domain/usecases/show_comments_usecase.dart';
+
+
 
 class VideogameDetailsView extends HookConsumerWidget {
   const VideogameDetailsView({
@@ -152,26 +155,56 @@ class VideogameDetailsView extends HookConsumerWidget {
               //Boton Cardone
               
               Align(
-                alignment: Alignment.bottomCenter,
-                child: sessionRole == 1 ?
-                TextButton(onPressed: (){
-                  print("Boton eliminar videojuego pulsado");
-                },
-                style: TextButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                  backgroundColor: const Color(0xff1971c2),
-                  foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8)
-                  ),
+  alignment: Alignment.bottomCenter,
+  child: sessionRole == 1
+      ? Consumer(
+          builder: (context, ref, child) {
+            final state = ref.watch(videogameDetailsViewModelProvider);
+
+            return TextButton(
+              onPressed: state is AsyncLoading
+                  ? null
+                  : () async {
+                      try {
+                        await ref
+                            .read(videogameDetailsViewModelProvider.notifier)
+                            .deleteVideogame(title, releaseDate);
+
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Videojuego eliminado con éxito.'),
+                          ),
+                        );
+
+                        Navigator.pop(context); // Regresar a la lista
+                      } catch (e) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text('Error al eliminar el videojuego: $e'),
+                          ),
+                        );
+                      }
+                    },
+              style: TextButton.styleFrom(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                backgroundColor: const Color(0xff1971c2),
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
                 ),
-                child: const Text(
-                  "Eliminar videojuego",
-                  style: TextStyle(fontSize: 14, color: Colors.white),
-                  ),
-                )
-                :const SizedBox.shrink(),
               ),
+              child: state is AsyncLoading
+                  ? const CircularProgressIndicator(color: Colors.white)
+                  : const Text(
+                      "Eliminar videojuego",
+                      style: TextStyle(fontSize: 14, color: Colors.white),
+                    ),
+            );
+          },
+        )
+      : const SizedBox.shrink(),
+),
               // Mostrar comentarios
               const SizedBox(height: 20),
               FutureBuilder(
