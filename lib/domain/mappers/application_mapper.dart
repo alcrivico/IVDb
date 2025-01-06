@@ -9,6 +9,7 @@ extension ApplicationModelToEntity on ApplicationModel {
       requestDate: requestDate,
       state: state,
       userId: userId,
+      email: email,
     );
   }
 }
@@ -21,6 +22,7 @@ extension ApplicationEntityToModel on ApplicationEntity {
       requestDate: requestDate,
       state: state,
       userId: userId,
+      email: email,
     );
   }
 }

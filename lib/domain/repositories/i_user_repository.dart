@@ -2,6 +2,7 @@ import 'package:dartz/dartz.dart';
 import 'package:ivdb/core/exceptions/fail_exception.dart';
 import 'package:ivdb/domain/entities/application_entity.dart';
 import 'package:ivdb/domain/entities/user_entity.dart';
+import 'package:ivdb/domain/entities/rating_entity.dart';
 
 abstract class IUserRepository {
   Future<Either<FailException, UserEntity>> getUser();
@@ -32,4 +33,7 @@ abstract class IUserRepository {
 
   Future<Either<FailException, Map<String, dynamic>>> uploadComment(
       String email, String title, DateTime releaseDate, String comment);
+
+    Future<Either<FailException, List<RatingEntity>>> getUserRatings(String email);
+
 }

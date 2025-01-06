@@ -3,55 +3,69 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:ivdb/domain/entities/user_entity.dart';
+import 'package:ivdb/domain/entities/videogame_entity.dart';
+import 'package:ivdb/presentation/screens/explore_videogames/explore_videogames_view.dart';
+import 'package:ivdb/presentation/viewmodels/delete_videogames/delete_videogame_state.dart';
 import 'package:ivdb/presentation/viewmodels/delete_videogames/delete_videogames_viewmodel.dart';
+import 'package:ivdb/presentation/widgets/shared/exit_door_box.dart';
+import 'package:ivdb/presentation/widgets/shared/home_box.dart';
 import 'package:ivdb/presentation/widgets/show_comments/comment_card_box.dart';
 import 'package:ivdb/domain/usecases/show_comments_usecase.dart';
-
-
 
 class VideogameDetailsView extends HookConsumerWidget {
   const VideogameDetailsView({
     super.key,
-    required this.title,
-    required this.platforms,
-    required this.imageData,
-    required this.criticAvgRating,
-    required this.publicAvgRating,
-    required this.id,
-    required this.releaseDate,
-    required this.developers,
-    required this.genres,
-    required this.description,
+    required this.videogame,
     required this.user,
   });
 
   final UserEntity user;
 
-  final String title;
-  final String platforms;
-  final String imageData;
-  final int criticAvgRating;
-  final int publicAvgRating;
-  final int id;
-  final DateTime releaseDate;
-  final String developers;
-  final String genres;
-  final String description;
+  final VideogameEntity videogame;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final DateFormat dateFormat = DateFormat('dd/MM/yyyy');
-    final String formattedDate = dateFormat.format(releaseDate);
+    final String formattedDate = dateFormat.format(videogame.releaseDate);
 
     // Obtener comentarios
     final showCommentsUseCase = ref.watch(showCommentsUseCaseProvider);
 
     final int? sessionRole = user.roleId;
 
+    final deleteVideogameState = ref.watch(videogameDetailsViewModelProvider);
+    final deleteVideogameViewModel =
+        ref.read(videogameDetailsViewModelProvider.notifier);
+
+    ref.listen<DeleteVideogameState>(videogameDetailsViewModelProvider,
+        (previous, next) {
+      if (next.status == DeleteVideogameStatus.success) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(
+                builder: (context) => ExploreVideogamesView(user)),
+            (Route<dynamic> route) =>
+                false, // Elimina todas las rutas anteriores
+          );
+        });
+      }
+    });
+
     return Scaffold(
       appBar: AppBar(
-        title: Text(title),
-        backgroundColor: const Color(0xff1971c2),
+        title: HomeBox(
+          onPressed: () {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => ExploreVideogamesView(
+                        user,
+                      )),
+            );
+          },
+        ),
+        actions: [ExitDoorBox()],
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -65,10 +79,11 @@ class VideogameDetailsView extends HookConsumerWidget {
                   borderRadius: BorderRadius.circular(10.0),
                   child: Container(
                     decoration: BoxDecoration(
-                      border: Border.all(color: const Color(0xff1971c2), width: 4),
+                      border:
+                          Border.all(color: const Color(0xff1971c2), width: 4),
                     ),
                     child: Image.memory(
-                      base64Decode(imageData),
+                      base64Decode(videogame.imageData ?? ''),
                       width: 400,
                       height: 400,
                       fit: BoxFit.cover,
@@ -80,7 +95,7 @@ class VideogameDetailsView extends HookConsumerWidget {
               ),
               const SizedBox(height: 20),
               Text(
-                'Titulo: $title',
+                'Titulo: ${videogame.title}',
                 style: const TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
@@ -89,17 +104,17 @@ class VideogameDetailsView extends HookConsumerWidget {
               ),
               const SizedBox(height: 10),
               Text(
-                'Descripcion: $description',
+                'Descripcion: ${videogame.description}',
                 style: const TextStyle(fontSize: 16),
               ),
               const SizedBox(height: 10),
               Text(
-                'Generos: $genres',
+                'Generos: ${videogame.genres}',
                 style: const TextStyle(fontSize: 16),
               ),
               const SizedBox(height: 10),
               Text(
-                'Plataformas: $platforms',
+                'Plataformas: ${videogame.platforms}',
                 //user.roleId.toString(),
                 style: const TextStyle(fontSize: 16),
               ),
@@ -110,7 +125,8 @@ class VideogameDetailsView extends HookConsumerWidget {
                     'Desarrolladora: ',
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                   ),
-                  Text(developers, style: const TextStyle(fontSize: 16)),
+                  Text(videogame.developers ?? '',
+                      style: const TextStyle(fontSize: 16)),
                 ],
               ),
               const SizedBox(height: 10),
@@ -132,7 +148,7 @@ class VideogameDetailsView extends HookConsumerWidget {
                   ),
                   const SizedBox(width: 5),
                   Text(
-                    criticAvgRating.toString(),
+                    videogame.criticAvgRating.toString(),
                     style: const TextStyle(fontSize: 16),
                   ),
                 ],
@@ -146,69 +162,90 @@ class VideogameDetailsView extends HookConsumerWidget {
                   ),
                   const SizedBox(width: 5),
                   Text(
-                    publicAvgRating.toString(),
+                    videogame.publicAvgRating.toString(),
                     style: const TextStyle(fontSize: 16),
                   ),
                 ],
               ),
 
-              //Boton Cardone
-              
-              Align(
-  alignment: Alignment.bottomCenter,
-  child: sessionRole == 1
-      ? Consumer(
-          builder: (context, ref, child) {
-            final state = ref.watch(videogameDetailsViewModelProvider);
+              SizedBox(height: 20),
 
-            return TextButton(
-              onPressed: state is AsyncLoading
-                  ? null
-                  : () async {
-                      try {
-                        await ref
-                            .read(videogameDetailsViewModelProvider.notifier)
-                            .deleteVideogame(title, releaseDate);
-
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Videojuego eliminado con éxito.'),
+              if (sessionRole == 1)
+                Center(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment
+                        .center, // Centra los botones horizontalmente
+                    children: [
+                      TextButton(
+                        onPressed: () {
+                          print('Editar videojuego');
+                        },
+                        style: ButtonStyle(
+                          backgroundColor:
+                              WidgetStateProperty.all(Color(0xff1971c2)),
+                          foregroundColor:
+                              WidgetStateProperty.all(Colors.white),
+                          shape: WidgetStateProperty.all(
+                            RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(
+                                  12.0), // Ajusta el valor según sea necesario
+                            ),
                           ),
-                        );
-
-                        Navigator.pop(context); // Regresar a la lista
-                      } catch (e) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text('Error al eliminar el videojuego: $e'),
+                        ),
+                        child: Text('Editar'),
+                      ),
+                      SizedBox(width: 20),
+                      if (deleteVideogameState.status ==
+                          DeleteVideogameStatus.loading)
+                        const CircularProgressIndicator()
+                      else
+                        TextButton(
+                          onPressed: () {
+                            deleteVideogameViewModel.deleteVideogame(
+                                videogame); // Eliminar videojuego
+                          },
+                          style: ButtonStyle(
+                            backgroundColor: WidgetStateProperty.all(
+                                Color.fromARGB(255, 194, 25, 25)),
+                            foregroundColor:
+                                WidgetStateProperty.all(Colors.white),
+                            shape: WidgetStateProperty.all(
+                              RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(
+                                    12.0), // Ajusta el valor según sea necesario
+                              ),
+                            ),
                           ),
-                        );
-                      }
+                          child: Text('Eliminar'),
+                        ),
+                    ],
+                  ),
+                )
+              else
+                Center(
+                  child: TextButton(
+                    onPressed: () {
+                      print('Calificar videojuego');
                     },
-              style: TextButton.styleFrom(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                backgroundColor: const Color(0xff1971c2),
-                foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-              ),
-              child: state is AsyncLoading
-                  ? const CircularProgressIndicator(color: Colors.white)
-                  : const Text(
-                      "Eliminar videojuego",
-                      style: TextStyle(fontSize: 14, color: Colors.white),
+                    style: ButtonStyle(
+                      backgroundColor:
+                          WidgetStateProperty.all(Color(0xff1971c2)),
+                      foregroundColor: WidgetStateProperty.all(Colors.white),
+                      shape: WidgetStateProperty.all(
+                        RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(
+                              12.0), // Ajusta el valor según sea necesario
+                        ),
+                      ),
                     ),
-            );
-          },
-        )
-      : const SizedBox.shrink(),
-),
+                    child: Text('Calificar'),
+                  ),
+                ),
               // Mostrar comentarios
               const SizedBox(height: 20),
               FutureBuilder(
-                future: showCommentsUseCase.call(title, releaseDate),
+                future: showCommentsUseCase.call(
+                    videogame.title, videogame.releaseDate),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const Center(child: CircularProgressIndicator());
@@ -250,11 +287,11 @@ class VideogameDetailsView extends HookConsumerWidget {
                               )
                             else
                               ...criticComments.map(
-                                (comment) => CommentCardBox(comment: comment,
-                                sessionRole: user.roleId!.toInt(),
-                                releaseDate: releaseDate,
-                                title: title
-                                ),
+                                (comment) => CommentCardBox(
+                                    comment: comment,
+                                    sessionRole: user.roleId!.toInt(),
+                                    releaseDate: videogame.releaseDate,
+                                    title: videogame.title),
                               ),
                             const SizedBox(height: 20),
                             const Text(
@@ -272,11 +309,11 @@ class VideogameDetailsView extends HookConsumerWidget {
                               )
                             else
                               ...publicComments.map(
-                                (comment) => CommentCardBox(comment: comment,
-                                sessionRole: user.roleId!.toInt(),
-                                releaseDate: releaseDate,
-                                title: title
-                                ),
+                                (comment) => CommentCardBox(
+                                    comment: comment,
+                                    sessionRole: user.roleId!.toInt(),
+                                    releaseDate: videogame.releaseDate,
+                                    title: videogame.title),
                               ),
                           ],
                         );

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:ivdb/domain/entities/user_entity.dart';
+import 'package:ivdb/presentation/screens/show_applications/show_applications_view.dart';
 import 'package:ivdb/presentation/viewmodels/explore_videogames/explore_videogames_state.dart';
 import 'package:ivdb/presentation/widgets/explore_videogames/videogame_card_box.dart';
 import 'package:ivdb/presentation/widgets/explore_videogames/videogames_filter_box.dart';
@@ -9,7 +11,7 @@ import 'package:ivdb/presentation/widgets/shared/home_box.dart';
 import 'package:ivdb/presentation/viewmodels/explore_videogames/explore_videogames_viewmodel.dart';
 
 class ExploreVideogamesView extends HookConsumerWidget {
-  const ExploreVideogamesView({super.key, required this.user});
+  const ExploreVideogamesView(this.user, {super.key});
 
   final UserEntity user;
 
@@ -32,6 +34,13 @@ class ExploreVideogamesView extends HookConsumerWidget {
       crossAxisCount = 1; // 1 columna y 8 filas
     }
 
+    useEffect(() {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        exploreVideogamesViewModel.exploreVideogames(8, 1, 'A-Z');
+      });
+      return null;
+    }, []);
+
     return Scaffold(
       appBar: AppBar(
         title: HomeBox(
@@ -40,7 +49,7 @@ class ExploreVideogamesView extends HookConsumerWidget {
               context,
               MaterialPageRoute(
                   builder: (context) => ExploreVideogamesView(
-                        user: user,
+                        user,
                       )),
             );
           },
@@ -75,7 +84,14 @@ class ExploreVideogamesView extends HookConsumerWidget {
                       TextButton(
                           child: const Text('Evaluar Usuarios'),
                           onPressed: () {
-                            print('Evaluar solicitudes de usuarios');
+                            // Navegar a la pantalla de evaluación de usuarios
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    ShowApplicationsView(user),
+                              ),
+                            );
                           }),
                     if (user.roleId == 2)
                       const Icon(
@@ -171,19 +187,7 @@ class ExploreVideogamesView extends HookConsumerWidget {
                         final videogame =
                             exploreVideogamesState.videogames![index];
                         return VideogameCardBox(
-                          title: videogame.title,
-                          description: videogame.description,
-                          id: videogame.id,
-                          releaseDate: videogame.releaseDate,
-                          developers: videogame.developers!,
-                          genres: videogame.genres!,
-                          platforms: videogame.platforms!,
-                          imageData: videogame.imageData!, 
-                          criticAvgRating:
-                              videogame.criticAvgRating?.toInt() ?? 0,
-                          publicAvgRating:
-                              videogame.publicAvgRating?.toInt() ?? 0,
-                          
+                          videogame: videogame,
                           user: user,
                         );
                       },
@@ -197,4 +201,3 @@ class ExploreVideogamesView extends HookConsumerWidget {
     );
   }
 }
-

@@ -62,7 +62,7 @@ class LoginView extends HookConsumerWidget {
             context,
             MaterialPageRoute(
               builder: (context) => ExploreVideogamesView(
-                user: loginState.user!,
+                loginState.user!,
               ),
             ),
           );

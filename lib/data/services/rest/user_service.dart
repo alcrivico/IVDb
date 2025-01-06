@@ -5,6 +5,7 @@ import 'package:ivdb/data/models/comment_model.dart';
 import 'rest_client.dart';
 import '../../models/user_model.dart';
 
+
 abstract class IUserService {
   Future<UserModel> getUser();
 
@@ -35,6 +36,8 @@ class UserService implements IUserService {
   UserService({required this.restClient});
 
   final RestClient restClient;
+
+  
 
   @override
   Future<UserModel> getUser() async {
@@ -250,6 +253,12 @@ class UserService implements IUserService {
       });
     }
   }
+
+  Future<List<dynamic>> getUserRatings(String email) async {
+  final response = await restClient.dio.get('/users/$email/ratings');
+  return response.data;
+}
+
 }
 
 final userServiceProvider = Provider<UserService>((ref) {
