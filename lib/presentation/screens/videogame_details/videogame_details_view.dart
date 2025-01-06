@@ -62,7 +62,8 @@ class VideogameDetailsView extends HookConsumerWidget {
                   borderRadius: BorderRadius.circular(10.0),
                   child: Container(
                     decoration: BoxDecoration(
-                      border: Border.all(color: const Color(0xff1971c2), width: 4),
+                      border:
+                          Border.all(color: const Color(0xff1971c2), width: 4),
                     ),
                     child: Image.memory(
                       base64Decode(imageData),
@@ -149,78 +150,74 @@ class VideogameDetailsView extends HookConsumerWidget {
                 ],
               ),
 
-              //Boton Cardone
-              
-              Align(
-                alignment: Alignment.bottomCenter,
-                child: sessionRole == 1 ?
-                TextButton(onPressed: (){
-                  print("Boton eliminar videojuego pulsado");
-                },
-                style: TextButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                  backgroundColor: const Color(0xff1971c2),
-                  foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8)
-                  ),
-                ),
-                child: const Text(
-                  "Eliminar videojuego",
-                  style: TextStyle(fontSize: 14, color: Colors.white),
+              SizedBox(height: 20),
+
+              if (sessionRole == 1)
+                Center(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment
+                        .center, // Centra los botones horizontalmente
+                    children: [
+                      TextButton(
+                        onPressed: () {
+                          print('Editar videojuego');
+                        },
+                        child: Text('Editar'),
+                        style: ButtonStyle(
+                          backgroundColor:
+                              WidgetStateProperty.all(Color(0xff1971c2)),
+                          foregroundColor:
+                              WidgetStateProperty.all(Colors.white),
+                          shape: WidgetStateProperty.all(
+                            RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(
+                                  12.0), // Ajusta el valor según sea necesario
+                            ),
+                          ),
+                        ),
+                      ),
+                      SizedBox(width: 20),
+                      TextButton(
+                        onPressed: () {
+                          print('Eliminar videojuego');
+                        },
+                        child: Text('Eliminar'),
+                        style: ButtonStyle(
+                          backgroundColor: WidgetStateProperty.all(
+                              Color.fromARGB(255, 194, 25, 25)),
+                          foregroundColor:
+                              WidgetStateProperty.all(Colors.white),
+                          shape: WidgetStateProperty.all(
+                            RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(
+                                  12.0), // Ajusta el valor según sea necesario
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 )
-                :const SizedBox.shrink(),
-              ),
-
-              const SizedBox(height: 8), 
-
-              //Boton actualizar
-              Align(
-                alignment: Alignment.bottomCenter,
-                child: sessionRole == 1 ?
-                TextButton(onPressed: (){
-                  print("Boton actualizar videojuego pulsado");
-                },
-                style: TextButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                  backgroundColor: const Color(0xff1971c2),
-                  foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8)
+              else
+                Center(
+                  child: TextButton(
+                    onPressed: () {
+                      print('Calificar videojuego');
+                    },
+                    child: Text('Calificar'),
+                    style: ButtonStyle(
+                      backgroundColor:
+                          WidgetStateProperty.all(Color(0xff1971c2)),
+                      foregroundColor: WidgetStateProperty.all(Colors.white),
+                      shape: WidgetStateProperty.all(
+                        RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(
+                              12.0), // Ajusta el valor según sea necesario
+                        ),
+                      ),
+                    ),
                   ),
                 ),
-                child: const Text(
-                  "Actualizar videojuego",
-                  style: TextStyle(fontSize: 14, color: Colors.white),
-                  ),
-                )
-                :const SizedBox.shrink(),
-              ),
-
-              //Boton calificar
-              Align(
-                alignment: Alignment.bottomCenter,
-                child: sessionRole == 2 ?
-                TextButton(onPressed: (){
-                  print("Boton calificar videojuego pulsado");
-                },
-                style: TextButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                  backgroundColor: const Color(0xff1971c2),
-                  foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8)
-                  ),
-                ),
-                child: const Text(
-                  "Calificar videojuego",
-                  style: TextStyle(fontSize: 14, color: Colors.white),
-                  ),
-                )
-                :const SizedBox.shrink(),
-              ),
-
               // Mostrar comentarios
               const SizedBox(height: 20),
               FutureBuilder(
@@ -266,11 +263,11 @@ class VideogameDetailsView extends HookConsumerWidget {
                               )
                             else
                               ...criticComments.map(
-                                (comment) => CommentCardBox(comment: comment,
-                                sessionRole: user.roleId!.toInt(),
-                                releaseDate: releaseDate,
-                                title: title
-                                ),
+                                (comment) => CommentCardBox(
+                                    comment: comment,
+                                    sessionRole: user.roleId!.toInt(),
+                                    releaseDate: releaseDate,
+                                    title: title),
                               ),
                             const SizedBox(height: 20),
                             const Text(
@@ -288,11 +285,11 @@ class VideogameDetailsView extends HookConsumerWidget {
                               )
                             else
                               ...publicComments.map(
-                                (comment) => CommentCardBox(comment: comment,
-                                sessionRole: user.roleId!.toInt(),
-                                releaseDate: releaseDate,
-                                title: title
-                                ),
+                                (comment) => CommentCardBox(
+                                    comment: comment,
+                                    sessionRole: user.roleId!.toInt(),
+                                    releaseDate: releaseDate,
+                                    title: title),
                               ),
                           ],
                         );
