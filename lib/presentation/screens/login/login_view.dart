@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:ivdb/presentation/screens/explore_videogames/explore_videogames_view.dart';
 import 'package:ivdb/presentation/viewmodels/login/login_viewmodel.dart';
 import 'package:ivdb/presentation/widgets/login/alert_message_info.dart';
 import 'package:ivdb/presentation/widgets/shared/button_box.dart';
@@ -32,6 +33,9 @@ class LoginView extends HookConsumerWidget {
         label: 'Contraseña', controller: passwordController, obscureText: true);
 
     TextButton btnRegistrate = TextButton(
+      style: ButtonStyle(
+          padding: WidgetStateProperty.all(EdgeInsets.zero),
+          overlayColor: WidgetStateProperty.all(Colors.transparent)),
       onPressed: () {
         Navigator.pushReplacement(
           context,
@@ -50,6 +54,22 @@ class LoginView extends HookConsumerWidget {
         textAlign: TextAlign.center,
       ),
     );
+
+    useEffect(() {
+      if (loginState.status == LoginStatus.success) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ExploreVideogamesView(
+                loginState.user!,
+              ),
+            ),
+          );
+        });
+      }
+      return null;
+    }, [loginState.status]);
 
     return Scaffold(
       body: SafeArea(
@@ -98,17 +118,7 @@ class LoginView extends HookConsumerWidget {
                       loginViewModel.login(email, password);
                     }),
               SizedBox(height: size.height * 0.05),
-              if (loginState.status == LoginStatus.success)
-                Text('Bienvenid@ ${loginState.user!.username}',
-                    style: const TextStyle(
-                        fontSize: 20,
-                        color: Colors.green,
-                        fontStyle: FontStyle.normal,
-                        fontFamily: 'Nunito',
-                        fontWeight: FontWeight.bold),
-                    textAlign: TextAlign.center)
-              else
-                btnRegistrate,
+              btnRegistrate,
             ])),
       )),
     );

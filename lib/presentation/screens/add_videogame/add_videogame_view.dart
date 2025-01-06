@@ -9,7 +9,7 @@ import 'package:ivdb/presentation/viewmodels/add_videogame/add_videogame_viewmod
 import 'package:ivdb/presentation/viewmodels/add_videogame/add_videogame_state.dart';
 
 class AddVideogameView extends ConsumerStatefulWidget {
-  const AddVideogameView({Key? key}) : super(key: key);
+  const AddVideogameView({super.key});
 
   @override
   ConsumerState<AddVideogameView> createState() => _AddVideogameViewState();

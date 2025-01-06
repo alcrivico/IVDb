@@ -42,7 +42,9 @@ dependencies:
   dartz: ^0.10.1
   window_size: ^0.1.0
   font_awesome_flutter: ^10.8.0
+  intl: ^0.18.0
   image_picker: ^0.8.4+2
+
 
 dev_dependencies:
   flutter_test:

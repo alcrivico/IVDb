@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 class RestClient {
   late final Dio _dio;
@@ -48,3 +49,7 @@ class RestClient {
     _authToken = null;
   }
 }
+
+final restClientProvider = Provider<RestClient>((ref) {
+  return RestClient(baseUrl: 'http://localhost:8080/api'); //localhost --> Windows 10.0.2.2 --> Android
+});
