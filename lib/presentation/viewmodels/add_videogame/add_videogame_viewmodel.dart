@@ -18,37 +18,44 @@ class AddVideogameViewModel extends StateNotifier<AddVideogameState> {
     String? platforms,
     String? genres,
   }) async {
-    state = state.copyWith(status: AddVideogameStatus.loading);
+    try {
+      state = state.copyWith(status: AddVideogameStatus.loading);
 
-    // Crea un modelo de videojuego
-    final videogame = VideogameModel(
-      id: 0, // Ajusta según la lógica de tu aplicación
-      title: title,
-      description: description,
-      releaseDate: releaseDate,
-      imageRoute: imageRoute, // Solo el nombre del archivo
-      developers: developers ?? "", // Asegura un valor no nulo
-      platforms: platforms ?? "",   // Asegura un valor no nulo
-      genres: genres ?? "",         // Asegura un valor no nulo
-    );
+      // Crea un modelo de videojuego
+      final videogame = VideogameModel(
+        id: 0,
+        title: title,
+        description: description,
+        releaseDate: releaseDate,
+        imageRoute: imageRoute, // Solo el nombre del archivo
+        developers: developers ?? "", // Asegura un valor no nulo
+        platforms: platforms ?? "", // Asegura un valor no nulo
+        genres: genres ?? "", // Asegura un valor no nulo
+      );
 
-    // Agrega el videojuego
-    final response = await _addVideogameUsecase.call(videogame);
+      // Agrega el videojuego
+      final response = await _addVideogameUsecase.call(videogame);
 
-    response.fold(
-      (failure) {
-        state = state.copyWith(
-          status: AddVideogameStatus.error,
-          errorMessage: failure.message,
-        );
-      },
-      (addedVideogame) {
-        state = state.copyWith(
-          status: AddVideogameStatus.success,
-          videogame: addedVideogame,
-        );
-      },
-    );
+      response.fold(
+        (failure) {
+          state = state.copyWith(
+            status: AddVideogameStatus.error,
+            errorMessage: failure.message,
+          );
+        },
+        (addedVideogame) {
+          state = state.copyWith(
+            status: AddVideogameStatus.success,
+            videogame: addedVideogame,
+          );
+        },
+      );
+    } catch (e) {
+      state = state.copyWith(
+        status: AddVideogameStatus.error,
+        errorMessage: e.toString(),
+      );
+    }
   }
 
   void restart() {

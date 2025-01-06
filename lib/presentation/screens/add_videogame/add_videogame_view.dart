@@ -21,7 +21,7 @@ class _AddVideogameViewState extends ConsumerState<AddVideogameView> {
   String? selectedPlatform;
   Uint8List? selectedImageBytes;
   final TextEditingController releaseDateController = TextEditingController();
-  
+
   // Definir title y description como miembros de la clase
   String title = '';
   String description = '';
@@ -66,17 +66,22 @@ class _AddVideogameViewState extends ConsumerState<AddVideogameView> {
     RegExp regex = RegExp(r'^\d{2}/\d{2}/\d{4}$');
     if (!regex.hasMatch(dateInput)) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Fecha en formato incorrecto. Debe ser DD/MM/AAAA')),
+        const SnackBar(
+            content: Text('Fecha en formato incorrecto. Debe ser DD/MM/AAAA')),
       );
       return;
     }
 
     // Convertir fecha de string a DateTime
-    DateTime releaseDate = DateTime.parse(dateInput.split('/').reversed.join('-'));
+    DateTime releaseDate =
+        DateTime.parse(dateInput.split('/').reversed.join('-'));
 
-    String imageRoute = "nombre_de_la_imagen.jpg"; // Usa el nombre de la imagen cargada
+    String imageRoute =
+        "nombre_de_la_imagen.jpg"; // Usa el nombre de la imagen cargada
 
-    final addVideogameViewModel = ref.read(addVideogameViewModelProvider);
+    final addVideogameViewModel =
+        ref.read(addVideogameViewModelProvider.notifier);
+
     addVideogameViewModel.addVideogame(
       title: title,
       description: description,
@@ -90,7 +95,9 @@ class _AddVideogameViewState extends ConsumerState<AddVideogameView> {
 
   @override
   Widget build(BuildContext context) {
-    final addVideogameViewModel = ref.watch(addVideogameViewModelProvider);
+    final addVideogameState = ref.watch(addVideogameViewModelProvider);
+    final addVideogameViewModel =
+        ref.read(addVideogameViewModelProvider.notifier);
 
     return Scaffold(
       appBar: AppBar(
@@ -173,7 +180,8 @@ class _AddVideogameViewState extends ConsumerState<AddVideogameView> {
                       ),
                     ),
                     onChanged: (value) {
-                      description = value; // Guardar la descripción en una variable
+                      description =
+                          value; // Guardar la descripción en una variable
                     },
                   ),
                   const SizedBox(height: 10),
@@ -188,18 +196,19 @@ class _AddVideogameViewState extends ConsumerState<AddVideogameView> {
                   ),
                   const SizedBox(height: 20),
                   ButtonBox(
-                    onPressed: _addVideogame, // Llamar a la función que valida y agrega el videojuego
+                    onPressed:
+                        _addVideogame, // Llamar a la función que valida y agrega el videojuego
                     text: 'Agregar Videojuego',
                   ),
                   // Mostrar estado de carga, éxito o error
-                  if (addVideogameViewModel.state.status == AddVideogameStatus.loading)
+                  if (addVideogameState.status == AddVideogameStatus.loading)
                     const CircularProgressIndicator(),
-                  if (addVideogameViewModel.state.status == AddVideogameStatus.error)
+                  if (addVideogameState == AddVideogameStatus.error)
                     Text(
-                      addVideogameViewModel.state.errorMessage ?? 'Error al agregar el videojuego',
+                      'No se pudo agregar el videojuego',
                       style: const TextStyle(color: Colors.red),
                     ),
-                  if (addVideogameViewModel.state.status == AddVideogameStatus.success)
+                  if (addVideogameState == AddVideogameStatus.success)
                     const Text(
                       'Videojuego agregado con éxito',
                       style: TextStyle(color: Colors.green),
