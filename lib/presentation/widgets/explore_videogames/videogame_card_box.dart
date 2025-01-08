@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:ivdb/domain/entities/videogame_entity.dart';
-import '../../screens/videogame_details/videogame_details_view.dart';
+import '../../screens/videogame/videogame_view.dart';
 import 'package:ivdb/domain/entities/user_entity.dart';
 
 // Asegúrate de importar la clase de detalles
@@ -22,7 +22,7 @@ class VideogameCardBox extends StatelessWidget {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => VideogameDetailsView(
+            builder: (context) => VideogameView(
               videogame: videogame,
               user: user,
             ),

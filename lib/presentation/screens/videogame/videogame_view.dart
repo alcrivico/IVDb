@@ -5,15 +5,15 @@ import 'package:intl/intl.dart';
 import 'package:ivdb/domain/entities/user_entity.dart';
 import 'package:ivdb/domain/entities/videogame_entity.dart';
 import 'package:ivdb/presentation/screens/explore_videogames/explore_videogames_view.dart';
-import 'package:ivdb/presentation/viewmodels/delete_videogames/delete_videogame_state.dart';
-import 'package:ivdb/presentation/viewmodels/delete_videogames/delete_videogames_viewmodel.dart';
+import 'package:ivdb/presentation/viewmodels/videogame/videogame_state.dart';
+import 'package:ivdb/presentation/viewmodels/videogame/videogames_viewmodel.dart';
 import 'package:ivdb/presentation/widgets/shared/exit_door_box.dart';
 import 'package:ivdb/presentation/widgets/shared/home_box.dart';
 import 'package:ivdb/presentation/widgets/show_comments/comment_card_box.dart';
 import 'package:ivdb/domain/usecases/show_comments_usecase.dart';
 
-class VideogameDetailsView extends HookConsumerWidget {
-  const VideogameDetailsView({
+class VideogameView extends HookConsumerWidget {
+  const VideogameView({
     super.key,
     required this.videogame,
     required this.user,
@@ -33,13 +33,11 @@ class VideogameDetailsView extends HookConsumerWidget {
 
     final int? sessionRole = user.roleId;
 
-    final deleteVideogameState = ref.watch(videogameDetailsViewModelProvider);
-    final deleteVideogameViewModel =
-        ref.read(videogameDetailsViewModelProvider.notifier);
+    final videogameState = ref.watch(videogameViewModelProvider);
+    final videogameViewModel = ref.read(videogameViewModelProvider.notifier);
 
-    ref.listen<DeleteVideogameState>(videogameDetailsViewModelProvider,
-        (previous, next) {
-      if (next.status == DeleteVideogameStatus.success) {
+    ref.listen<VideogameState>(videogameViewModelProvider, (previous, next) {
+      if (next.status == VideogameStatus.successDeleting) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
           Navigator.pushAndRemoveUntil(
             context,
@@ -195,13 +193,13 @@ class VideogameDetailsView extends HookConsumerWidget {
                         child: Text('Editar'),
                       ),
                       SizedBox(width: 20),
-                      if (deleteVideogameState.status ==
-                          DeleteVideogameStatus.loading)
+                      if (videogameState.status ==
+                          VideogameStatus.loadingDeleting)
                         const CircularProgressIndicator()
                       else
                         TextButton(
                           onPressed: () {
-                            deleteVideogameViewModel.deleteVideogame(
+                            videogameViewModel.deleteVideogame(
                                 videogame); // Eliminar videojuego
                           },
                           style: ButtonStyle(
