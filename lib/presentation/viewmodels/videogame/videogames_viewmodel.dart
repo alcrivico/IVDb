@@ -1,8 +1,10 @@
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:ivdb/core/exceptions/fail_exception.dart';
 import 'package:ivdb/domain/entities/videogame_entity.dart';
 import 'package:ivdb/domain/usecases/delete_videogame_usecase.dart';
 import 'package:ivdb/domain/usecases/rate_videogame_usecase.dart';
 import 'package:ivdb/domain/usecases/show_videogame_usecase.dart';
+import 'package:ivdb/presentation/viewmodels/videogame/rate_state.dart';
 import 'package:ivdb/presentation/viewmodels/videogame/videogame_state.dart';
 
 class VideogameViewModel extends StateNotifier<VideogameState> {
@@ -14,24 +16,26 @@ class VideogameViewModel extends StateNotifier<VideogameState> {
       this._rateVideogameUsecase)
       : super(VideogameState.initial());
 
-  Future<void> showVideogame(
+  Future<VideogameEntity> showVideogame(
       String title, DateTime releaseDate, String email) async {
-    state = state.copyWith(status: VideogameStatus.loadingRate);
+    state = state.copyWith(status: VideogameStatus.loadingVideogame);
     final result = await _showVideogameUsecase.call(title, releaseDate, email);
 
-    result.fold(
+    return result.fold(
       (failure) {
         state = state.copyWith(
-          status: VideogameStatus.noRate,
+          status: VideogameStatus.errorVideogame,
           errorMessage: failure.message,
-          rate: -1,
         );
+
+        throw ServerException(failure.message);
       },
       (success) {
         state = state.copyWith(
-          status: VideogameStatus.successRate,
-          rate: success.rate,
+          status: VideogameStatus.successVideogame,
+          videogame: success,
         );
+        return success;
       },
     );
   }
@@ -76,6 +80,42 @@ class VideogameViewModel extends StateNotifier<VideogameState> {
   }
 }
 
+class RateViewModel extends StateNotifier<RateState> {
+  final ShowVideogameUsecase _showVideogameUsecase;
+
+  RateViewModel(this._showVideogameUsecase) : super(RateState.initial());
+
+  Future<int> getVideogameRate(
+      String title, DateTime releaseDate, String email) async {
+    state = state.copyWith(status: RateStatus.loading);
+    final result =
+        await _showVideogameUsecase.showUserRating(title, releaseDate, email);
+
+    result.fold(
+      (failure) {
+        state = state.copyWith(
+          status: RateStatus.noRate,
+          errorMessage: failure.message,
+          rate: -1,
+        );
+
+        return -1;
+      },
+      (success) {
+        state = state.copyWith(
+          status: RateStatus.success,
+          errorMessage: 'Hasta el error mesage funciona',
+          rate: success.rate,
+        );
+
+        return success.rate;
+      },
+    );
+
+    return state.rate;
+  }
+}
+
 final videogameViewModelProvider =
     StateNotifierProvider<VideogameViewModel, VideogameState>((ref) {
   final showVideogameUsecase = ref.read(showVideogameUsecaseProvider);
@@ -83,4 +123,10 @@ final videogameViewModelProvider =
   final rateVideogameUseCase = ref.read(rateVideogameUsecaseProvider);
   return VideogameViewModel(
       showVideogameUsecase, deleteVideogameUseCase, rateVideogameUseCase);
+});
+
+final rateViewModelProvider =
+    StateNotifierProvider<RateViewModel, RateState>((ref) {
+  final showVideogameUsecase = ref.read(showVideogameUsecaseProvider);
+  return RateViewModel(showVideogameUsecase);
 });

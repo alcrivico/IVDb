@@ -3,6 +3,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:ivdb/core/exceptions/fail_exception.dart';
 import 'package:ivdb/data/repositories/rest/videogame_repository.dart';
 import 'package:ivdb/domain/entities/rating_entity.dart';
+import 'package:ivdb/domain/entities/videogame_entity.dart';
 import 'package:ivdb/domain/repositories/i_videogame_repository.dart';
 
 class ShowVideogameUsecase {
@@ -10,12 +11,17 @@ class ShowVideogameUsecase {
 
   ShowVideogameUsecase(this._videogameRepository);
 
-  Future<Either<FailException, RatingEntity>> call(
+  Future<Either<FailException, VideogameEntity>> call(
       String title, DateTime releaseDate, String email) async {
-    final rate =
-        await _videogameRepository.showUserRating(title, releaseDate, email);
+    final videogame =
+        await _videogameRepository.showVideogame(title, releaseDate);
 
-    return rate;
+    return videogame;
+  }
+
+  Future<Either<FailException, RatingEntity>> showUserRating(
+      String title, DateTime releaseDate, String email) {
+    return _videogameRepository.showUserRating(title, releaseDate, email);
   }
 }
 

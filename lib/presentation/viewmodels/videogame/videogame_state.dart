@@ -1,25 +1,28 @@
+import 'package:ivdb/domain/entities/videogame_entity.dart';
+
 enum VideogameStatus {
   initial,
-  loadingRate,
+  loadingVideogame,
   loadingDeleting,
   loadingRating,
-  successRate,
+  successVideogame,
   successDeleting,
   successRating,
-  noRate,
-  errorRate,
+  errorVideogame,
   errorDeleting,
-  errorRating
+  errorRating,
 }
 
 class VideogameState {
   final VideogameStatus status;
   final String? errorMessage;
+  final VideogameEntity? videogame;
   final int rate;
 
   VideogameState({
     required this.status,
     this.errorMessage,
+    this.videogame,
     this.rate = -1,
   });
 
@@ -30,11 +33,13 @@ class VideogameState {
   VideogameState copyWith({
     VideogameStatus? status,
     String? errorMessage,
+    VideogameEntity? videogame,
     int? rate,
   }) {
     return VideogameState(
       status: status ?? this.status,
       errorMessage: errorMessage ?? this.errorMessage,
+      videogame: videogame ?? this.videogame,
       rate: rate ?? this.rate,
     );
   }

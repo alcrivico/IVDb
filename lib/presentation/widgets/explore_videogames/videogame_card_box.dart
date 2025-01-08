@@ -23,7 +23,9 @@ class VideogameCardBox extends StatelessWidget {
           context,
           MaterialPageRoute(
             builder: (context) => VideogameView(
-              videogame: videogame,
+              title: videogame.title,
+              releaseDate: videogame.releaseDate,
+              imageData: videogame.imageData ?? '',
               user: user,
             ),
           ),

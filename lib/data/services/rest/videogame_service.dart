@@ -59,8 +59,11 @@ class VideogameService implements IVideogameService {
   @override
   Future<VideogameModel> showVideogame(
       String title, DateTime releaseDate) async {
-    final response = await restClient.dio
-        .post('/videogame/single/$title/${releaseDate.toIso8601String()}');
+    String month = releaseDate.month.toString().length == 1
+        ? '0${releaseDate.month}'
+        : releaseDate.month.toString();
+    String date = '${releaseDate.year}-${month}-${releaseDate.day}';
+    final response = await restClient.dio.get('/videogame/single/$title/$date');
 
     if (response.statusCode == 200) {
       final videogame = VideogameModel.fromJson(response.data);

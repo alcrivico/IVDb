@@ -25,7 +25,7 @@ class VideogameRepository implements IVideogameRepository {
 
       return Right(result.toEntity());
     } on DioException catch (e) {
-      return Left(ServerException(e.response?.data['message']));
+      return Left(ServerException(e.message ?? 'Error desconocido'));
     } catch (e) {
       return Left(ServerException(e.toString()));
     }
