@@ -1,9 +1,13 @@
 enum VideogameStatus {
   initial,
+  loadingRate,
   loadingDeleting,
   loadingRating,
+  successRate,
   successDeleting,
   successRating,
+  noRate,
+  errorRate,
   errorDeleting,
   errorRating
 }

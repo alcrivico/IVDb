@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -11,6 +12,7 @@ import 'package:ivdb/presentation/widgets/shared/exit_door_box.dart';
 import 'package:ivdb/presentation/widgets/shared/home_box.dart';
 import 'package:ivdb/presentation/widgets/show_comments/comment_card_box.dart';
 import 'package:ivdb/domain/usecases/show_comments_usecase.dart';
+import 'package:ivdb/presentation/widgets/videogame/rating_circle_box.dart';
 
 class VideogameView extends HookConsumerWidget {
   const VideogameView({
@@ -33,8 +35,20 @@ class VideogameView extends HookConsumerWidget {
 
     final int? sessionRole = user.roleId;
 
+    Widget rated = Container();
+
     final videogameState = ref.watch(videogameViewModelProvider);
     final videogameViewModel = ref.read(videogameViewModelProvider.notifier);
+
+    useEffect(() {
+      if (sessionRole != 1) {
+        Future.microtask(() {
+          videogameViewModel.showVideogame(
+              videogame.title, videogame.releaseDate, user.email);
+        });
+      }
+      return null;
+    }, []);
 
     ref.listen<VideogameState>(videogameViewModelProvider, (previous, next) {
       if (next.status == VideogameStatus.successDeleting) {
@@ -119,12 +133,18 @@ class VideogameView extends HookConsumerWidget {
               const SizedBox(height: 10),
               Row(
                 children: [
-                  const Text(
+                  Text(
                     'Desarrolladora: ',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    style: const TextStyle(
+                        fontSize: 16, fontWeight: FontWeight.bold),
                   ),
-                  Text(videogame.developers ?? '',
-                      style: const TextStyle(fontSize: 16)),
+                  Flexible(
+                    child: Text(
+                      videogame.developers ?? 'N/A',
+                      style: const TextStyle(fontSize: 16),
+                      overflow: TextOverflow.visible,
+                    ),
+                  ),
                 ],
               ),
               const SizedBox(height: 10),
@@ -138,34 +158,99 @@ class VideogameView extends HookConsumerWidget {
                 ],
               ),
               const SizedBox(height: 10),
-              Row(
-                children: [
-                  const Text(
-                    'Calificacion de los criticos:',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(width: 5),
-                  Text(
-                    videogame.criticAvgRating.toString(),
-                    style: const TextStyle(fontSize: 16),
-                  ),
-                ],
+              const Text(
+                'Calificaciones',
+                style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xff1971c2)),
               ),
-              const SizedBox(height: 5),
+              const SizedBox(height: 10),
               Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  const Text(
-                    'Calificacion del publico:',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  Column(
+                    children: [
+                      const Text(
+                        'Críticos',
+                        style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            fontFamily: 'Nunito'),
+                      ),
+                      const SizedBox(height: 5),
+                      RatingCircleBox(
+                          rate: (videogame.criticAvgRating ?? -1).toInt()),
+                    ],
                   ),
-                  const SizedBox(width: 5),
-                  Text(
-                    videogame.publicAvgRating.toString(),
-                    style: const TextStyle(fontSize: 16),
+                  Column(
+                    children: [
+                      const Text(
+                        'Público',
+                        style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            fontFamily: 'Nunito'),
+                      ),
+                      const SizedBox(height: 5),
+                      RatingCircleBox(
+                          rate: (videogame.publicAvgRating ?? -1).toInt()),
+                    ],
                   ),
                 ],
               ),
 
+              SizedBox(height: 20),
+              if (sessionRole != 1)
+                Consumer(
+                  builder: (context, watch, child) {
+                    if (videogameState.status == VideogameStatus.loadingRate) {
+                      return const Center(child: CircularProgressIndicator());
+                    } else if (videogameState.status ==
+                        VideogameStatus.noRate) {
+                      rated = Column(
+                        children: [
+                          const Text(
+                            'Otorgada',
+                            style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                fontFamily: 'Nunito'),
+                          ),
+                          const SizedBox(height: 5),
+                          RatingCircleBox(rate: -1),
+                        ],
+                      );
+
+                      return Center(
+                        child: rated,
+                      );
+                    } else if (videogameState.status ==
+                        VideogameStatus.successRate) {
+                      rated = Column(
+                        children: [
+                          const Text(
+                            'Otorgada',
+                            style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                fontFamily: 'Nunito'),
+                          ),
+                          const SizedBox(height: 5),
+                          RatingCircleBox(rate: videogameState.rate),
+                        ],
+                      );
+
+                      return Center(
+                        child: rated,
+                      );
+                    }
+
+                    return Center(
+                      child: rated,
+                    );
+                  },
+                ),
               SizedBox(height: 20),
 
               if (sessionRole == 1)

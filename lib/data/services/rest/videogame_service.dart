@@ -1,6 +1,8 @@
+import 'package:dio/dio.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:ivdb/core/exceptions/fail_exception.dart';
 import 'package:ivdb/data/models/comment_model.dart';
+import 'package:ivdb/data/models/rating_model.dart';
 import 'package:ivdb/data/models/videogame_model.dart';
 import 'rest_client.dart';
 
@@ -9,6 +11,9 @@ abstract class IVideogameService {
 
   Future<List<VideogameModel>> showVideogamesList(
       {required int limit, required int page, required String filter});
+
+  Future<RatingModel> showUserRating(
+      String title, DateTime releaseDate, String email);
 
   Future<CommentModel> showUserComment(
       String title, DateTime releaseDate, String email);
@@ -84,12 +89,43 @@ class VideogameService implements IVideogameService {
   }
 
   @override
+  Future<RatingModel> showUserRating(
+      String title, DateTime releaseDate, String email) async {
+    final data = {
+      'title': title,
+      'releaseDate': releaseDate.toIso8601String(),
+      'email': email,
+    };
+
+    try {
+      final response =
+          await restClient.dio.get('/videogame/rating/', data: data);
+
+      if (response.statusCode == 200) {
+        final rating = RatingModel.fromJson(response.data);
+
+        return rating;
+      } else {
+        throw ServerException(response.data['message']);
+      }
+    } on DioException catch (e) {
+      if (e.response?.statusCode == 404) {
+        throw ServerException('Calificación no encontrada');
+      } else {
+        throw ServerException(e.response?.data['message']);
+      }
+    } catch (e) {
+      throw ServerException(e.toString());
+    }
+  }
+
+  @override
   Future<CommentModel> showUserComment(
       String title, DateTime releaseDate, String email) async {
     final data = {
-      'email': email,
       'title': title,
       'releaseDate': releaseDate.toIso8601String(),
+      'email': email,
     };
 
     final response =
