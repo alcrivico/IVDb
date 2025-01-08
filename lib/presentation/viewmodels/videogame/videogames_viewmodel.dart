@@ -40,9 +40,11 @@ class VideogameViewModel extends StateNotifier<VideogameState> {
     );
   }
 
-  Future<void> deleteVideogame(VideogameEntity videogame) async {
+  Future<void> deleteVideogame(
+      String title, DateTime releaseDate, String imageRoute) async {
     state = state.copyWith(status: VideogameStatus.loadingDeleting);
-    final result = await _deleteVideogameUseCase.call(videogame);
+    final result =
+        await _deleteVideogameUseCase.call(title, releaseDate, imageRoute);
 
     result.fold(
       (failure) {

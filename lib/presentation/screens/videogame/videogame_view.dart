@@ -46,18 +46,16 @@ class VideogameView extends HookConsumerWidget {
     final String formattedDate = dateFormat.format(releaseDate);
     final DateTime rightFormattedDate =
         DateTime.parse(rightDateFormat.format(releaseDate));
-    VideogameEntity? videogame = null;
-    int? rate = null;
 
     useEffect(() {
+      Future.microtask(() async {
+        await videogameViewModel.showVideogame(
+            title, rightFormattedDate, user.email);
+      });
+
       if (sessionRole != 1) {
         Future.microtask(() async {
-          videogame = await videogameViewModel.showVideogame(
-              title, rightFormattedDate, user.email);
-        });
-
-        Future.microtask(() async {
-          rate = await rateViewModel.getVideogameRate(
+          await rateViewModel.getVideogameRate(
               title, rightFormattedDate, user.email);
         });
       }
@@ -147,7 +145,7 @@ class VideogameView extends HookConsumerWidget {
               else if (videogameState.status ==
                   VideogameStatus.successVideogame)
                 Text(
-                  'Titulo: ${title}',
+                  'Titulo: ${videogameState.videogame?.title}',
                   style: const TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
@@ -245,54 +243,53 @@ class VideogameView extends HookConsumerWidget {
               ),
 
               SizedBox(height: 20),
-              if (sessionRole != 1)
-                Consumer(
-                  builder: (context, watch, child) {
-                    if (rateState.status == RateStatus.loading) {
-                      return const Center(child: CircularProgressIndicator());
-                    } else if (rateState.status == RateStatus.error) {
-                      rated = Column(
-                        children: [
-                          const Text(
-                            'Otorgada',
-                            style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                                fontFamily: 'Nunito'),
-                          ),
-                          const SizedBox(height: 5),
-                          RatingCircleBox(rate: -1),
-                        ],
-                      );
-
-                      return Center(
-                        child: rated,
-                      );
-                    } else if (rateState.status == RateStatus.success) {
-                      rated = Column(
-                        children: [
-                          Text(
-                            'Otorgada',
-                            style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                                fontFamily: 'Nunito'),
-                          ),
-                          const SizedBox(height: 5),
-                          RatingCircleBox(rate: rateState.rate),
-                        ],
-                      );
-
-                      return Center(
-                        child: rated,
-                      );
-                    }
+              Consumer(
+                builder: (context, watch, child) {
+                  if (rateState.status == RateStatus.loading) {
+                    return const Center(child: CircularProgressIndicator());
+                  } else if (rateState.status == RateStatus.error) {
+                    rated = Column(
+                      children: [
+                        const Text(
+                          'Otorgada',
+                          style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              fontFamily: 'Nunito'),
+                        ),
+                        const SizedBox(height: 5),
+                        RatingCircleBox(rate: -1),
+                      ],
+                    );
 
                     return Center(
                       child: rated,
                     );
-                  },
-                ),
+                  } else if (rateState.status == RateStatus.success) {
+                    rated = Column(
+                      children: [
+                        Text(
+                          'Otorgada',
+                          style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              fontFamily: 'Nunito'),
+                        ),
+                        const SizedBox(height: 5),
+                        RatingCircleBox(rate: rateState.rate),
+                      ],
+                    );
+
+                    return Center(
+                      child: rated,
+                    );
+                  }
+
+                  return Center(
+                    child: rated,
+                  );
+                },
+              ),
               SizedBox(height: 20),
 
               if (sessionRole == 1)
@@ -339,8 +336,10 @@ class VideogameView extends HookConsumerWidget {
                               },
                             );
                             if (result == true) {
-                              videogameViewModel
-                                  .deleteVideogame(videogameState.videogame!);
+                              videogameViewModel.deleteVideogame(
+                                  title,
+                                  releaseDate,
+                                  videogameState.videogame?.imageRoute ?? '');
                             }
                           },
                           style: ButtonStyle(
