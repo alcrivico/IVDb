@@ -3,7 +3,6 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:ivdb/core/exceptions/fail_exception.dart';
 import 'package:ivdb/data/repositories/grpc/cover_image_repository.dart';
 import 'package:ivdb/data/repositories/rest/videogame_repository.dart';
-import 'package:ivdb/domain/entities/videogame_entity.dart';
 import 'package:ivdb/domain/repositories/i_cover_image_repository.dart';
 import 'package:ivdb/domain/repositories/i_videogame_repository.dart';
 import 'package:ivdb/protos/generated/fileServices.pbgrpc.dart';

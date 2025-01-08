@@ -81,8 +81,10 @@ class ExploreVideogamesView extends HookConsumerWidget {
                       ),
                     if (user.roleId == 1) const SizedBox(width: 10),
                     if (user.roleId == 1)
-                      TextButton(
-                          child: const Text('Evaluar Usuarios'),
+                      Flexible(
+                        child: TextButton(
+                          child: const Text('Evaluar Usuarios',
+                              textAlign: TextAlign.center),
                           onPressed: () {
                             // Navegar a la pantalla de evaluación de usuarios
                             Navigator.pushReplacement(
@@ -92,7 +94,9 @@ class ExploreVideogamesView extends HookConsumerWidget {
                                     ShowApplicationsView(user),
                               ),
                             );
-                          }),
+                          },
+                        ),
+                      ),
                     if (user.roleId == 2)
                       const Icon(
                         Icons.person,
@@ -100,11 +104,15 @@ class ExploreVideogamesView extends HookConsumerWidget {
                       ),
                     if (user.roleId == 2) const SizedBox(width: 10),
                     if (user.roleId == 2)
-                      TextButton(
-                          child: const Text('Solicitar Privilegios'),
+                      Flexible(
+                        child: TextButton(
+                          child: const Text('Solicitar Privilegios',
+                              textAlign: TextAlign.center),
                           onPressed: () {
                             print('Solicitar privilegio de critico');
-                          }),
+                          },
+                        ),
+                      ),
                     if (user.roleId == 3)
                       const Icon(
                         Icons.star,
@@ -173,15 +181,18 @@ class ExploreVideogamesView extends HookConsumerWidget {
                   Text(exploreVideogamesState.errorMessage.toString())
                 else
                   SizedBox(
-                    height: size.height * 0.9,
+                    height: size.height -
+                        kToolbarHeight -
+                        400, // Ajusta este valor según sea necesario
                     child: GridView.builder(
                       shrinkWrap: true,
                       physics: const ScrollPhysics(),
                       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: crossAxisCount,
-                          crossAxisSpacing: 10,
-                          mainAxisSpacing: 10,
-                          childAspectRatio: 3 / 4),
+                        crossAxisCount: crossAxisCount,
+                        crossAxisSpacing: 10,
+                        mainAxisSpacing: 10,
+                        childAspectRatio: 3 / 4,
+                      ),
                       itemCount: exploreVideogamesState.videogames!.length,
                       itemBuilder: (context, index) {
                         final videogame =
@@ -193,6 +204,7 @@ class ExploreVideogamesView extends HookConsumerWidget {
                       },
                     ),
                   ),
+                SizedBox(height: 20),
               ],
             ),
           ),

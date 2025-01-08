@@ -6,7 +6,7 @@ class GrpcClient {
 
   GrpcClient() {
     _channel = ClientChannel(
-      'localhost', // Cambiar a la dirección del servidor en la hotspot //localhost --> Windows 10.0.2.2 --> Android
+      '10.0.2.2', //Windows --> localhost // Android --> 10.0.2.2
       port: 50051,
       options: const ChannelOptions(credentials: ChannelCredentials.insecure()),
     );

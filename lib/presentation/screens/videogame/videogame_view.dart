@@ -435,10 +435,13 @@ class VideogameView extends HookConsumerWidget {
                             else
                               ...criticComments.map(
                                 (comment) => CommentCardBox(
-                                    comment: comment,
-                                    sessionRole: user.roleId!.toInt(),
-                                    releaseDate: releaseDate,
-                                    title: title),
+                                  comment: comment,
+                                  sessionRole: user.roleId!.toInt(),
+                                  releaseDate: releaseDate,
+                                  title: title,
+                                  imageData: imageData,
+                                  user: user,
+                                ),
                               ),
                             const SizedBox(height: 20),
                             const Text(
@@ -457,10 +460,13 @@ class VideogameView extends HookConsumerWidget {
                             else
                               ...publicComments.map(
                                 (comment) => CommentCardBox(
-                                    comment: comment,
-                                    sessionRole: user.roleId!.toInt(),
-                                    releaseDate: releaseDate,
-                                    title: title),
+                                  comment: comment,
+                                  sessionRole: user.roleId!.toInt(),
+                                  releaseDate: releaseDate,
+                                  title: title,
+                                  imageData: imageData,
+                                  user: user,
+                                ),
                               ),
                           ],
                         );
