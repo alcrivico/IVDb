@@ -3,7 +3,6 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:ivdb/core/exceptions/fail_exception.dart';
 import 'package:ivdb/data/repositories/grpc/cover_image_repository.dart';
 import 'package:ivdb/data/repositories/rest/videogame_repository.dart';
-import 'package:ivdb/domain/entities/videogame_entity.dart';
 import 'package:ivdb/domain/repositories/i_cover_image_repository.dart';
 import 'package:ivdb/domain/repositories/i_videogame_repository.dart';
 import 'package:ivdb/protos/generated/fileServices.pbgrpc.dart';
@@ -19,10 +18,9 @@ class DeleteVideogameUseCase {
         _coverImageRepository = coverImageRepository;
 
   Future<Either<FailException, DeleteImageResponse>> call(
-      VideogameEntity videogame) async {
+      String title, DateTime releaseDate, String imageRoute) async {
     Either<FailException, Map<String, dynamic>> videogameDeletion =
-        await _videogameRepository.deleteVideogame(
-            videogame.title, videogame.releaseDate);
+        await _videogameRepository.deleteVideogame(title, releaseDate);
 
     Either<FailException, DeleteImageResponse> coverImageDeletion;
 
@@ -31,8 +29,8 @@ class DeleteVideogameUseCase {
         (fail) => Future<Either<FailException, DeleteImageResponse>>.value(
             Left(fail)),
         (deletionResponse) async {
-          var deletionResult = await _coverImageRepository
-              .deleteCoverImage(videogame.imageRoute);
+          var deletionResult =
+              await _coverImageRepository.deleteCoverImage(imageRoute);
 
           if (deletionResult.isLeft()) {
             return Left(

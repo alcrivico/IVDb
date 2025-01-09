@@ -73,54 +73,60 @@ class LoginView extends HookConsumerWidget {
 
     return Scaffold(
       body: SafeArea(
+        child: SingleChildScrollView(
           child: Center(
-        child: Container(
-            constraints: BoxConstraints(maxWidth: 500),
-            width: size.width * 0.9,
-            margin: const EdgeInsets.all(20),
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-                color: Colors.transparent,
-                border: Border.all(color: const Color(0xff1971c2), width: 4),
-                borderRadius: BorderRadius.circular(20)),
-            child: Column(children: [
-              SizedBox(height: size.height * 0.05),
-              const Text('IVDb',
-                  style: TextStyle(
-                      fontSize: 60,
-                      color: Color(0xff1971c2),
-                      fontStyle: FontStyle.normal,
-                      fontFamily: 'Anton SC',
-                      fontWeight: FontWeight.normal),
-                  textAlign: TextAlign.center),
-              SizedBox(height: size.height * 0.1),
-              tfEmail,
-              SizedBox(height: size.height * 0.05),
-              tfPassword,
-              SizedBox(height: size.height * 0.05),
-              if (loginState.status == LoginStatus.error)
-                AlertMessageInfo(
-                    message: loginState.errorMessage.toString(),
-                    color: Colors.yellow,
-                    messageColor: Colors.black)
-              else
-                const SizedBox(height: 0),
-              SizedBox(height: size.height * 0.05),
-              if (loginState.status == LoginStatus.loading)
-                const CircularProgressIndicator()
-              else
-                ButtonBox(
-                    text: 'Iniciar Sesión',
-                    onPressed: () {
-                      final email = emailController.text.trim();
-                      final password = passwordController.text;
+            child: Container(
+              constraints: BoxConstraints(maxWidth: 500),
+              width: size.width * 0.9,
+              margin: const EdgeInsets.all(20),
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                  color: Colors.transparent,
+                  border: Border.all(color: const Color(0xff1971c2), width: 4),
+                  borderRadius: BorderRadius.circular(20)),
+              child: Column(
+                children: [
+                  SizedBox(height: size.height * 0.05),
+                  const Text('IVDb',
+                      style: TextStyle(
+                          fontSize: 60,
+                          color: Color(0xff1971c2),
+                          fontStyle: FontStyle.normal,
+                          fontFamily: 'Anton SC',
+                          fontWeight: FontWeight.normal),
+                      textAlign: TextAlign.center),
+                  SizedBox(height: size.height * 0.1),
+                  tfEmail,
+                  SizedBox(height: size.height * 0.05),
+                  tfPassword,
+                  SizedBox(height: size.height * 0.05),
+                  if (loginState.status == LoginStatus.error)
+                    AlertMessageInfo(
+                        message: loginState.errorMessage.toString(),
+                        color: Colors.yellow,
+                        messageColor: Colors.black)
+                  else
+                    const SizedBox(height: 0),
+                  SizedBox(height: size.height * 0.05),
+                  if (loginState.status == LoginStatus.loading)
+                    const CircularProgressIndicator()
+                  else
+                    ButtonBox(
+                        text: 'Iniciar Sesión',
+                        onPressed: () {
+                          final email = emailController.text.trim();
+                          final password = passwordController.text;
 
-                      loginViewModel.login(email, password);
-                    }),
-              SizedBox(height: size.height * 0.05),
-              btnRegistrate,
-            ])),
-      )),
+                          loginViewModel.login(email, password);
+                        }),
+                  SizedBox(height: size.height * 0.05),
+                  btnRegistrate,
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
     );
   }
 }
