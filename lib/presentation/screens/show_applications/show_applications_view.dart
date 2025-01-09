@@ -64,47 +64,48 @@ class ShowApplicationsView extends HookConsumerWidget {
                 : state.status == ShowApplicationsStatus.error
                     ? Center(child: Text('Error: ${state.errorMessage}'))
                     : Expanded(
-                        child: DataTable(
-                          columns: const [
-                            DataColumn(label: Text('ID Solicitud')),
-                            DataColumn(label: Text('Correo Electrónico')),
-                            DataColumn(label: Text('Descripción')),
-                            DataColumn(label: Text('Fecha')),
-                            DataColumn(label: Text('Estado')),
-                            DataColumn(label: Text('Acciones')),
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: DataTable(
+                  columns: const [
+                    DataColumn(label: Text('ID Solicitud')),
+                    DataColumn(label: Text('Correo Electrónico')),
+                    DataColumn(label: Text('Descripción')),
+                    DataColumn(label: Text('Fecha')),
+                    DataColumn(label: Text('Estado')),
+                    DataColumn(label: Text('Acciones')),
+                  ],
+                  rows: state.applications?.map((application) {
+                        return DataRow(
+                          cells: [
+                            DataCell(Text(application.id.toString())),
+                            DataCell(Text(application.email ?? 'N/A')),
+                            DataCell(Text(application.request ?? 'N/A')),
+                            DataCell(Text(
+                                application.requestDate != null
+                                    ? application.requestDate
+                                        .toString()
+                                        .substring(0, 10) // Formato de fecha
+                                    : 'Sin fecha')),
+                            DataCell(Text(application.state
+                                ? 'Aprobada'
+                                : 'Pendiente')),
+                            DataCell(
+                              ElevatedButton(
+                                onPressed: () {
+                                  _showApplicationDetails(
+                                      context, application, user);
+                                },
+                                child: const Text('Consultar'),
+                              ),
+                            ),
                           ],
-                          rows: state.applications?.map((application) {
-                                return DataRow(
-                                  cells: [
-                                    DataCell(Text(application.id.toString())),
-                                    DataCell(Text(application.email ?? 'N/A')),
-                                    DataCell(
-                                        Text(application.request ?? 'N/A')),
-                                    DataCell(Text(
-                                        application.requestDate != null
-                                            ? application.requestDate
-                                                .toString()
-                                                .substring(
-                                                    0, 10) // Formato de fecha
-                                            : 'Sin fecha')),
-                                    DataCell(Text(application.state
-                                        ? 'Aprobada'
-                                        : 'Pendiente')),
-                                    DataCell(
-                                      ElevatedButton(
-                                        onPressed: () {
-                                          _showApplicationDetails(
-                                              context, application, user);
-                                        },
-                                        child: const Text('Consultar'),
-                                      ),
-                                    ),
-                                  ],
-                                );
-                              }).toList() ??
-                              [],
-                        ),
-                      ),
+                        );
+                      }).toList() ??
+                      [],
+                ),
+              ),
+            ),
           ],
         ),
       ),

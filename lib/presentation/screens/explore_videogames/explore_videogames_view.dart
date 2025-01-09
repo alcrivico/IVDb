@@ -3,6 +3,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:ivdb/domain/entities/user_entity.dart';
 import 'package:ivdb/presentation/screens/show_applications/show_applications_view.dart';
+import 'package:ivdb/presentation/screens/request_privilege/request_privilege_view.dart';
 import 'package:ivdb/presentation/viewmodels/explore_videogames/explore_videogames_state.dart';
 import 'package:ivdb/presentation/widgets/explore_videogames/videogame_card_box.dart';
 import 'package:ivdb/presentation/widgets/explore_videogames/videogames_filter_box.dart';
@@ -103,7 +104,14 @@ class ExploreVideogamesView extends HookConsumerWidget {
                       TextButton(
                           child: const Text('Solicitar Privilegios'),
                           onPressed: () {
-                            print('Solicitar privilegio de critico');
+                            // Navegar a RequestPrivilegeView
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    RequestPrivilegeView(userEmail: user.email),
+                              ),
+                            );
                           }),
                     if (user.roleId == 3)
                       const Icon(
