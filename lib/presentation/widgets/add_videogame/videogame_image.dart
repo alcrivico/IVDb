@@ -4,7 +4,7 @@ import 'package:image_picker/image_picker.dart';
 
 class VideogameImageBox extends StatefulWidget {
   final Uint8List? imageBytes;
-  final ValueChanged<Uint8List?> onImageSelected;
+  final void Function(Uint8List? imageBytes, String? imagePath) onImageSelected;
 
   const VideogameImageBox({
     super.key,
@@ -26,7 +26,9 @@ class _VideogameImageBoxState extends State<VideogameImageBox> {
 
     if (pickedFile != null) {
       final Uint8List imageBytes = await pickedFile.readAsBytes();
-      widget.onImageSelected(imageBytes);
+      widget.onImageSelected(imageBytes, pickedFile.path);
+    } else {
+      widget.onImageSelected(null, null); // En caso de que no se seleccione nada
     }
   }
 
@@ -65,3 +67,4 @@ class _VideogameImageBoxState extends State<VideogameImageBox> {
     );
   }
 }
+

@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:ivdb/presentation/widgets/add_videogame/videogame_combo_box.dart';
 import 'package:ivdb/presentation/widgets/add_videogame/videogame_image.dart';
 import 'package:ivdb/presentation/widgets/shared/button_box.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:ivdb/presentation/viewmodels/add_videogame/add_videogame_viewmodel.dart';
 import 'package:ivdb/presentation/viewmodels/add_videogame/add_videogame_state.dart';
@@ -20,6 +19,7 @@ class _AddVideogameViewState extends ConsumerState<AddVideogameView> {
   String? selectedGenre;
   String? selectedPlatform;
   Uint8List? selectedImageBytes;
+  String? selectedImagePath;
   final TextEditingController releaseDateController = TextEditingController();
 
   // Definir title y description como miembros de la clase
@@ -86,7 +86,7 @@ class _AddVideogameViewState extends ConsumerState<AddVideogameView> {
       title: title,
       description: description,
       releaseDate: releaseDate,
-      imageRoute: imageRoute,
+      imageRoute: selectedImagePath ?? '',
       developers: selectedDeveloper,
       platforms: selectedPlatform,
       genres: selectedGenre,
@@ -111,10 +111,11 @@ class _AddVideogameViewState extends ConsumerState<AddVideogameView> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               VideogameImageBox(
-                onImageSelected: (imageBytes) {
+                onImageSelected: (imageBytes, imagePath) {
                   setState(() {
                     selectedImageBytes = imageBytes;
-                  });
+                    selectedImagePath = imagePath; // Guarda la ruta de la imagen
+                    });
                 },
                 imageBytes: selectedImageBytes,
               ),
