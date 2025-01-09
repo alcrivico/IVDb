@@ -21,18 +21,29 @@ class VideogameComboBox extends StatelessWidget {
         labelText: title,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
+          borderSide: BorderSide(
+            color: const Color(0xff1971c2), // Color del borde
+            width: 4,
+          ),
         ),
       ),
       value: selectedItem,
       items: items.map((String item) {
         return DropdownMenuItem<String>(
           value: item,
-          child: Text(item),
+          child: Text(
+            item,
+            style: const TextStyle(color: Color(0xff1971c2)), // Color del texto
+          ),
         );
       }).toList(),
       onChanged: onChanged,
       isExpanded: true,
-      hint: const Text("Seleccione una opción"),
+      hint: const Text(
+        "Seleccione una opción",
+        style: TextStyle(color: Color(0xff1971c2)), // Color del texto del hint
+      ),
     );
   }
 }
+

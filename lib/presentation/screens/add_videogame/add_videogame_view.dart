@@ -1,4 +1,4 @@
-import 'dart:typed_data'; // Asegúrate de importar esta librería
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:ivdb/presentation/widgets/add_videogame/videogame_combo_box.dart';
 import 'package:ivdb/presentation/widgets/add_videogame/videogame_image.dart';
@@ -21,8 +21,6 @@ class _AddVideogameViewState extends ConsumerState<AddVideogameView> {
   Uint8List? selectedImageBytes;
   String? selectedImagePath;
   final TextEditingController releaseDateController = TextEditingController();
-
-  // Definir title y description como miembros de la clase
   String title = '';
   String description = '';
 
@@ -61,7 +59,6 @@ class _AddVideogameViewState extends ConsumerState<AddVideogameView> {
   };
 
   void _addVideogame() {
-    // Validar fecha
     String dateInput = releaseDateController.text;
     RegExp regex = RegExp(r'^\d{2}/\d{2}/\d{4}$');
     if (!regex.hasMatch(dateInput)) {
@@ -72,7 +69,6 @@ class _AddVideogameViewState extends ConsumerState<AddVideogameView> {
       return;
     }
 
-    // Convertir fecha de string a DateTime
     DateTime releaseDate =
         DateTime.parse(dateInput.split('/').reversed.join('-'));
 
@@ -106,52 +102,60 @@ class _AddVideogameViewState extends ConsumerState<AddVideogameView> {
         padding: const EdgeInsets.all(16.0),
         child: SingleChildScrollView(
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              VideogameImageBox(
-                onImageSelected: (imageBytes, imagePath) {
-                  setState(() {
-                    selectedImageBytes = imageBytes;
-                    selectedImagePath = imagePath; // Guarda la ruta de la imagen
+              Center(
+                child: VideogameImageBox(
+                  onImageSelected: (imageBytes, imagePath) {
+                    setState(() {
+                      selectedImageBytes = imageBytes;
+                      selectedImagePath = imagePath;
                     });
-                },
-                imageBytes: selectedImageBytes,
+                  },
+                  imageBytes: selectedImageBytes,
+                ),
               ),
               const SizedBox(height: 20),
-              Column(
+              Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  VideogameComboBox(
-                    title: "Desarrolladores",
-                    items: developers.keys.toList(),
-                    selectedItem: selectedDeveloper,
-                    onChanged: (value) {
-                      setState(() {
-                        selectedDeveloper = value;
-                      });
-                    },
+                  Expanded(
+                    child: VideogameComboBox(
+                      title: "Desarrolladores",
+                      items: developers.keys.toList(),
+                      selectedItem: selectedDeveloper,
+                      onChanged: (value) {
+                        setState(() {
+                          selectedDeveloper = value;
+                        });
+                      },
+                    ),
                   ),
-                  const SizedBox(height: 10),
-                  VideogameComboBox(
-                    title: "Géneros",
-                    items: genres.keys.toList(),
-                    selectedItem: selectedGenre,
-                    onChanged: (value) {
-                      setState(() {
-                        selectedGenre = value;
-                      });
-                    },
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: VideogameComboBox(
+                      title: "Géneros",
+                      items: genres.keys.toList(),
+                      selectedItem: selectedGenre,
+                      onChanged: (value) {
+                        setState(() {
+                          selectedGenre = value;
+                        });
+                      },
+                    ),
                   ),
-                  const SizedBox(height: 10),
-                  VideogameComboBox(
-                    title: "Plataformas",
-                    items: platforms.keys.toList(),
-                    selectedItem: selectedPlatform,
-                    onChanged: (value) {
-                      setState(() {
-                        selectedPlatform = value;
-                      });
-                    },
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: VideogameComboBox(
+                      title: "Plataformas",
+                      items: platforms.keys.toList(),
+                      selectedItem: selectedPlatform,
+                      onChanged: (value) {
+                        setState(() {
+                          selectedPlatform = value;
+                        });
+                      },
+                    ),
                   ),
                 ],
               ),
@@ -166,7 +170,7 @@ class _AddVideogameViewState extends ConsumerState<AddVideogameView> {
                       ),
                     ),
                     onChanged: (value) {
-                      title = value; // Guardar el título en una variable
+                      title = value;
                     },
                   ),
                   const SizedBox(height: 10),
@@ -179,8 +183,7 @@ class _AddVideogameViewState extends ConsumerState<AddVideogameView> {
                       ),
                     ),
                     onChanged: (value) {
-                      description =
-                          value; // Guardar la descripción en una variable
+                      description = value;
                     },
                   ),
                   const SizedBox(height: 10),
@@ -195,17 +198,15 @@ class _AddVideogameViewState extends ConsumerState<AddVideogameView> {
                   ),
                   const SizedBox(height: 20),
                   ButtonBox(
-                    onPressed:
-                        _addVideogame, // Llamar a la función que valida y agrega el videojuego
+                    onPressed: _addVideogame,
                     text: 'Agregar Videojuego',
                   ),
-                  // Mostrar estado de carga, éxito o error
                   if (addVideogameState.status == AddVideogameStatus.loading)
                     const CircularProgressIndicator(),
                   if (addVideogameState == AddVideogameStatus.error)
-                    Text(
+                    const Text(
                       'No se pudo agregar el videojuego',
-                      style: const TextStyle(color: Colors.red),
+                      style: TextStyle(color: Colors.red),
                     ),
                   if (addVideogameState == AddVideogameStatus.success)
                     const Text(
