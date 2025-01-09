@@ -76,9 +76,6 @@ class _AddVideogameViewState extends ConsumerState<AddVideogameView> {
     DateTime releaseDate =
         DateTime.parse(dateInput.split('/').reversed.join('-'));
 
-    String imageRoute =
-        "nombre_de_la_imagen.jpg"; // Usa el nombre de la imagen cargada
-
     final addVideogameViewModel =
         ref.read(addVideogameViewModelProvider.notifier);
 
@@ -87,6 +84,7 @@ class _AddVideogameViewState extends ConsumerState<AddVideogameView> {
       description: description,
       releaseDate: releaseDate,
       imageRoute: selectedImagePath ?? '',
+      imageBytes: selectedImageBytes!,
       developers: selectedDeveloper,
       platforms: selectedPlatform,
       genres: selectedGenre,

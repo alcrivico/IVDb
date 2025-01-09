@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:ivdb/data/models/videogame_model.dart';
 import 'package:ivdb/domain/usecases/add_videogame_usecase.dart';
@@ -13,7 +15,8 @@ class AddVideogameViewModel extends StateNotifier<AddVideogameState> {
     required String title,
     required String description,
     required DateTime releaseDate,
-    required String imageRoute, // Solo el nombre del archivo
+    required String imageRoute, 
+    required Uint8List imageBytes,
     String? developers,
     String? platforms,
     String? genres,
@@ -27,14 +30,14 @@ class AddVideogameViewModel extends StateNotifier<AddVideogameState> {
         title: title,
         description: description,
         releaseDate: releaseDate,
-        imageRoute: imageRoute, // Solo el nombre del archivo
-        developers: developers ?? "", // Asegura un valor no nulo
-        platforms: platforms ?? "", // Asegura un valor no nulo
-        genres: genres ?? "", // Asegura un valor no nulo
+        imageRoute: imageRoute, 
+        developers: developers ?? "", 
+        platforms: platforms ?? "", 
+        genres: genres ?? "", 
       );
 
       // Agrega el videojuego
-      final response = await _addVideogameUsecase.call(videogame);
+      final response = await _addVideogameUsecase.call(videogame, imageBytes);
 
       response.fold(
         (failure) {

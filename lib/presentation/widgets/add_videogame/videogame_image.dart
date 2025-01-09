@@ -21,7 +21,7 @@ class _VideogameImageBoxState extends State<VideogameImageBox> {
 
   Future<void> _pickImage() async {
     final XFile? pickedFile = await _picker.pickImage(
-      source: ImageSource.gallery, // Cambia a ImageSource.camera si quieres usar la cámara
+      source: ImageSource.gallery,
     );
 
     if (pickedFile != null) {

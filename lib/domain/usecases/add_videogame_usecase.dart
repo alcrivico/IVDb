@@ -1,3 +1,5 @@
+import 'dart:convert';
+import 'dart:typed_data';
 import 'package:dartz/dartz.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:ivdb/core/exceptions/fail_exception.dart';
@@ -19,24 +21,26 @@ class AddVideogameUsecase {
   })  : _videogameRepository = videogameRepository,
         _coverImageRepository = coverImageRepository;
 
-  Future<Either<FailException, VideogameEntity>> call(VideogameModel videogame) async {
-  // Usa el nombre del archivo que ya está establecido como imageRoute
+  Future<Either<FailException, VideogameEntity>> call(VideogameModel videogame, Uint8List imageBytes) async {
+  
+  String base64Image = base64Encode(imageBytes);
+
   final imageResponse = await _coverImageRepository.uploadCoverImage(
-    videogame.imageRoute, // Usa el nombre del archivo aquí
-    videogame.imageRoute, // Esto puede ser la ruta original o los datos de la imagen
+    videogame.imageRoute, //El nombre que tendra la ruta
+    base64Image, //Para que el formato de la imagen sea valido
   );
 
   // Manejo de la respuesta de la subida de la imagen
   return imageResponse.fold(
     (fail) {
-      return Left(fail); // Retorna el error si falla la subida
+      return Left(fail); 
     },
     (imageUploadResponse) {
       return _videogameRepository.uploadVideogame(
         videogame.title,
         videogame.description,
         videogame.releaseDate,
-        videogame.imageRoute, // La ruta será solo el nombre de la imagen
+        videogame.imageRoute, 
         videogame.developers ?? "",
         videogame.platforms ?? "",
         videogame.genres ??"",
