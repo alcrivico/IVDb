@@ -49,14 +49,6 @@ class ShowApplicationsView extends HookConsumerWidget {
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
-            // Botón para recargar solicitudes
-            Align(
-              alignment: Alignment.centerRight,
-              child: ElevatedButton(
-                onPressed: () => viewModel.fetchApplications(),
-                child: const Text('Actualizar'),
-              ),
-            ),
             const SizedBox(height: 16),
             // Manejo de estados
             state.status == ShowApplicationsStatus.loading

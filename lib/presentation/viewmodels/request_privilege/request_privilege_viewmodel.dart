@@ -25,8 +25,9 @@ class RequestPrivilegeViewModel extends StateNotifier<RequestPrivilegeState> {
           );
         },
         // Manejo de éxito
-        (_) {
-          state = state.copyWith(status: RequestPrivilegeStatus.success);
+        (success) {
+          state = state.copyWith(status: RequestPrivilegeStatus.success, application: success);
+          
         },
       );
     } catch (e) {
