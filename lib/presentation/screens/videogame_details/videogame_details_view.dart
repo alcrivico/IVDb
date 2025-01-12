@@ -175,7 +175,6 @@ class VideogameDetailsView extends HookConsumerWidget {
                         onPressed: () {
                           print('Editar videojuego');
                         },
-                        child: Text('Editar'),
                         style: ButtonStyle(
                           backgroundColor:
                               WidgetStateProperty.all(Color(0xff1971c2)),
@@ -188,13 +187,13 @@ class VideogameDetailsView extends HookConsumerWidget {
                             ),
                           ),
                         ),
+                        child: Text('Editar'),
                       ),
                       SizedBox(width: 20),
                       TextButton(
                         onPressed: () {
                           print('Eliminar videojuego');
                         },
-                        child: Text('Eliminar'),
                         style: ButtonStyle(
                           backgroundColor: WidgetStateProperty.all(
                               Color.fromARGB(255, 194, 25, 25)),
@@ -207,6 +206,7 @@ class VideogameDetailsView extends HookConsumerWidget {
                             ),
                           ),
                         ),
+                        child: Text('Eliminar'),
                       ),
                     ],
                   ),
@@ -217,7 +217,6 @@ class VideogameDetailsView extends HookConsumerWidget {
                     onPressed: () {
                       print('Calificar videojuego');
                     },
-                    child: Text('Calificar'),
                     style: ButtonStyle(
                       backgroundColor:
                           WidgetStateProperty.all(Color(0xff1971c2)),
@@ -229,6 +228,7 @@ class VideogameDetailsView extends HookConsumerWidget {
                         ),
                       ),
                     ),
+                    child: Text('Calificar'),
                   ),
                 ),
               // Mostrar comentarios
