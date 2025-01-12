@@ -24,12 +24,19 @@ class EvaluateApplicationView extends ConsumerWidget {
       appBar: AppBar(
         title: HomeBox(
           onPressed: () {
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => ExploreVideogamesView(
-                        user,
-                      )),
+            AppBar(
+              title: HomeBox(
+                onPressed: () {
+                  Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => ExploreVideogamesView(user)),
+                    (Route<dynamic> route) =>
+                        false, // Elimina todas las rutas anteriores
+                  );
+                },
+              ),
+              actions: [ExitDoorBox()],
             );
           },
         ),

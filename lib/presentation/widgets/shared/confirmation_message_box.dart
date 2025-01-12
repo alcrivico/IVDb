@@ -51,26 +51,6 @@ class ConfirmationMessageBox extends StatelessWidget {
                 children: [
                   Flexible(
                     child: TextButton(
-                      onPressed: () {
-                        Navigator.of(context).pop(
-                            false); // Retorna falso si se presiona cancelar
-                      },
-                      style: ButtonStyle(
-                        side: WidgetStateProperty.all(
-                          BorderSide(color: Colors.red, width: 2),
-                        ),
-                        shape: WidgetStateProperty.all(
-                          RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10.0),
-                          ),
-                        ),
-                      ),
-                      child: Text(cancel, style: TextStyle(color: Colors.red)),
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  Flexible(
-                    child: TextButton(
                         onPressed: () {
                           Navigator.of(context).pop(
                               true); // Retorna verdadero si se presiona aceptar
@@ -95,6 +75,26 @@ class ConfirmationMessageBox extends StatelessWidget {
                             ),
                           ),
                         )),
+                  ),
+                  const SizedBox(width: 8),
+                  Flexible(
+                    child: TextButton(
+                      onPressed: () {
+                        Navigator.of(context).pop(
+                            false); // Retorna falso si se presiona cancelar
+                      },
+                      style: ButtonStyle(
+                        side: WidgetStateProperty.all(
+                          BorderSide(color: Colors.red, width: 2),
+                        ),
+                        shape: WidgetStateProperty.all(
+                          RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10.0),
+                          ),
+                        ),
+                      ),
+                      child: Text(cancel, style: TextStyle(color: Colors.red)),
+                    ),
                   ),
                 ],
               ),
