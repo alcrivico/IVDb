@@ -4,6 +4,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:ivdb/presentation/screens/login/login_view.dart';
 import 'package:ivdb/presentation/viewmodels/login/login_viewmodel.dart';
+import 'package:ivdb/presentation/widgets/shared/confirmation_message_box.dart';
 
 class ExitDoorBox extends HookConsumerWidget {
   const ExitDoorBox({super.key});
@@ -36,12 +37,27 @@ class ExitDoorBox extends HookConsumerWidget {
             size: 30,
             weight: 12,
           ),
-          onPressed: () {
-            ref.read(loginViewModelProvider.notifier).logout();
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (context) => const LoginView()),
+          onPressed: () async {
+            final result = await showDialog<bool>(
+              context: context,
+              builder: (BuildContext context) {
+                return ConfirmationMessageBox(
+                  title: 'Cerrar Sesión',
+                  message: '¿Estás seguro de que deseas cerrar sesión?',
+                  action: 'Cerrar Sesión',
+                  cancel: 'Cancelar',
+                );
+              },
             );
+
+            if (result != null && result) {
+              ref.read(loginViewModelProvider.notifier).logout();
+              Navigator.pushReplacement(
+                // ignore: use_build_context_synchronously
+                context,
+                MaterialPageRoute(builder: (context) => const LoginView()),
+              );
+            }
           },
         ),
       ),

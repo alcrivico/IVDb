@@ -5,8 +5,10 @@ import 'package:ivdb/core/exceptions/fail_exception.dart';
 import 'package:ivdb/data/models/videogame_model.dart';
 import 'package:ivdb/data/services/rest/videogame_service.dart';
 import 'package:ivdb/domain/entities/comment_entity.dart';
+import 'package:ivdb/domain/entities/rating_entity.dart';
 import 'package:ivdb/domain/entities/videogame_entity.dart';
 import 'package:ivdb/domain/mappers/comment_mapper.dart';
+import 'package:ivdb/domain/mappers/rating_mapper.dart';
 import 'package:ivdb/domain/mappers/videogame_mapper.dart';
 import 'package:ivdb/domain/repositories/i_videogame_repository.dart';
 
@@ -23,7 +25,7 @@ class VideogameRepository implements IVideogameRepository {
 
       return Right(result.toEntity());
     } on DioException catch (e) {
-      return Left(ServerException(e.response?.data['message']));
+      return Left(ServerException(e.message ?? 'Error desconocido'));
     } catch (e) {
       return Left(ServerException(e.toString()));
     }
@@ -39,6 +41,21 @@ class VideogameRepository implements IVideogameRepository {
       return Right(result.map((e) => e.toEntity()).toList());
     } on DioException catch (e) {
       return Left(ServerException(e.response?.data['message']));
+    } catch (e) {
+      return Left(ServerException(e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<FailException, RatingEntity>> showUserRating(
+      String title, DateTime releaseDate, String email) async {
+    try {
+      final result =
+          await _videogameService.showUserRating(title, releaseDate, email);
+
+      return Right(result.toEntity());
+    } on DioException catch (e) {
+      return Left(ServerException(e.message ?? 'Error desconocido'));
     } catch (e) {
       return Left(ServerException(e.toString()));
     }
@@ -166,10 +183,10 @@ class VideogameRepository implements IVideogameRepository {
     try {
       final result =
           await _videogameService.deleteVideogame(title, releaseDate);
-
       return Right(result);
     } on DioException catch (e) {
-      return Left(ServerException(e.response?.data['message']));
+      return Left(
+          ServerException(e.response?.data['message'] ?? 'Error al eliminar'));
     } catch (e) {
       return Left(ServerException(e.toString()));
     }

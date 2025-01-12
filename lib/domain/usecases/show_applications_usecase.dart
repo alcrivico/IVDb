@@ -32,7 +32,8 @@ class ShowApplicationsUseCase {
 }
 
 /// Provider para inyectar la lógica del caso de uso
-final showApplicationsUseCaseProvider = Provider<ShowApplicationsUseCase>((ref) {
+final showApplicationsUseCaseProvider =
+    Provider<ShowApplicationsUseCase>((ref) {
   final userRepository = ref.read(userRepositoryProvider);
   return ShowApplicationsUseCase(userRepository: userRepository);
 });

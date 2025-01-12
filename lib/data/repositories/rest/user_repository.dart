@@ -21,9 +21,10 @@ class UserRepository implements IUserRepository {
   UserRepository(this._userService);
 
   @override
-  Future<Either<FailException, UserEntity>> getUser() async {
+  Future<Either<FailException, UserEntity>> getUser(
+      String email, String password) async {
     try {
-      final result = await _userService.getUser();
+      final result = await _userService.getUser(email, password);
       return Right(result.toEntity());
     } on DioException catch (e) {
       return Left(ServerException(e.response?.data['message']));

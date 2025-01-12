@@ -1,39 +1,18 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import '../../screens/videogame_details/videogame_details_view.dart';
+import 'package:ivdb/domain/entities/videogame_entity.dart';
+import '../../screens/videogame/videogame_view.dart';
 import 'package:ivdb/domain/entities/user_entity.dart';
 
 // Asegúrate de importar la clase de detalles
 
 class VideogameCardBox extends StatelessWidget {
-  const VideogameCardBox({
-    super.key,
-    required this.title,
-    required this.platforms,
-    required this.imageData,
-    required this.criticAvgRating,
-    required this.publicAvgRating,
-    required this.id,
-    required this.releaseDate,
-    required this.developers,
-    required this.genres,
-    required this.description,
-
-    required this.user
-  });
+  const VideogameCardBox(
+      {super.key, required this.videogame, required this.user});
 
   final UserEntity user;
 
-  final String title;
-  final String platforms;
-  final String imageData;
-  final int criticAvgRating;
-  final int publicAvgRating;
-  final int id;
-  final DateTime releaseDate;
-  final String developers;
-  final String genres;
-  final String description;
+  final VideogameEntity videogame;
 
   @override
   Widget build(BuildContext context) {
@@ -43,17 +22,10 @@ class VideogameCardBox extends StatelessWidget {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => VideogameDetailsView(
-              title: title,
-              platforms: platforms,
-              imageData: imageData,
-              criticAvgRating: criticAvgRating,
-              publicAvgRating: publicAvgRating,
-              description: description,
-              id: id,
-              developers: developers,
-              releaseDate: releaseDate,
-              genres: genres,
+            builder: (context) => VideogameView(
+              title: videogame.title,
+              releaseDate: videogame.releaseDate,
+              imageData: videogame.imageData ?? '',
               user: user,
             ),
           ),
@@ -75,7 +47,7 @@ class VideogameCardBox extends StatelessWidget {
                 children: [
                   const SizedBox(height: 25),
                   Text(
-                    title,
+                    videogame.title,
                     style: const TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
@@ -86,7 +58,7 @@ class VideogameCardBox extends StatelessWidget {
                   ),
                   const SizedBox(height: 5),
                   Text(
-                    platforms,
+                    videogame.platforms ?? '',
                     style: const TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.bold,
@@ -116,7 +88,7 @@ class VideogameCardBox extends StatelessWidget {
                             width: 120,
                             height: 120,
                             child: Image.memory(
-                              base64Decode(imageData),
+                              base64Decode(videogame.imageData ?? ''),
                               fit: BoxFit.cover,
                               errorBuilder: (context, error, stackTrace) =>
                                   const Icon(Icons.error),
@@ -139,7 +111,9 @@ class VideogameCardBox extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
                         Text(
-                          criticAvgRating.toString(),
+                          videogame.criticAvgRating != null
+                              ? videogame.criticAvgRating.toString()
+                              : '0',
                           style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
@@ -157,7 +131,9 @@ class VideogameCardBox extends StatelessWidget {
                           ),
                         ),
                         Text(
-                          publicAvgRating.toString(),
+                          videogame.publicAvgRating != null
+                              ? videogame.publicAvgRating.toString()
+                              : '0',
                           style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,

@@ -42,10 +42,12 @@ class EvaluateApplicationView extends ConsumerWidget {
           children: [
             IconButton(
                 onPressed: () {
-                  Navigator.pushReplacement(
+                  Navigator.pushAndRemoveUntil(
                     context,
                     MaterialPageRoute(
                         builder: (context) => ShowApplicationsView(user)),
+                    (Route<dynamic> route) =>
+                        false, // Elimina todas las rutas anteriores
                   );
                 },
                 icon: Icon(Icons.arrow_back)),
@@ -66,30 +68,34 @@ class EvaluateApplicationView extends ConsumerWidget {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 ElevatedButton(
-                  onPressed: () {
-                    viewModel.evaluateApplication(
+                  onPressed: () async {
+                    await viewModel.evaluateApplication(
                         application.email ?? '', false);
 
-                    Navigator.pushReplacement(
+                    Navigator.pushAndRemoveUntil(
+                      // ignore: use_build_context_synchronously
                       context,
                       MaterialPageRoute(
-                        builder: (context) => ShowApplicationsView(user),
-                      ),
+                          builder: (context) => ShowApplicationsView(user)),
+                      (Route<dynamic> route) =>
+                          false, // Elimina todas las rutas anteriores
                     );
                   },
                   style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
                   child: const Text('Rechazar'),
                 ),
                 ElevatedButton(
-                  onPressed: () {
-                    viewModel.evaluateApplication(
+                  onPressed: () async {
+                    await viewModel.evaluateApplication(
                         application.email ?? '', true);
 
-                    Navigator.pushReplacement(
+                    Navigator.pushAndRemoveUntil(
+                      // ignore: use_build_context_synchronously
                       context,
                       MaterialPageRoute(
-                        builder: (context) => ShowApplicationsView(user),
-                      ),
+                          builder: (context) => ShowApplicationsView(user)),
+                      (Route<dynamic> route) =>
+                          false, // Elimina todas las rutas anteriores
                     );
                   },
                   style:

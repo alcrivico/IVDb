@@ -1,25 +1,30 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:intl/intl.dart'; 
+import 'package:intl/intl.dart';
 import 'package:ivdb/domain/entities/comment_entity.dart';
+import 'package:ivdb/domain/entities/user_entity.dart';
 import 'package:ivdb/domain/usecases/hide_comment_usecase.dart';
+import 'package:ivdb/presentation/screens/videogame/videogame_view.dart';
 
-class CommentCardBox extends HookConsumerWidget { 
-  const CommentCardBox({
-    super.key,
-    required this.comment,
-    required this.sessionRole,
-    required this.releaseDate,
-    required this.title
-  });
+class CommentCardBox extends HookConsumerWidget {
+  const CommentCardBox(
+      {super.key,
+      required this.comment,
+      required this.sessionRole,
+      required this.releaseDate,
+      required this.title,
+      required this.imageData,
+      required this.user});
 
   final CommentEntity comment;
   final int sessionRole;
   final DateTime releaseDate;
   final String title;
+  final String imageData;
+  final UserEntity user;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) { 
+  Widget build(BuildContext context, WidgetRef ref) {
     final DateFormat dateFormat = DateFormat('dd/MM/yyyy');
     final String formattedDate = dateFormat.format(comment.createdAt);
 
@@ -31,7 +36,7 @@ class CommentCardBox extends HookConsumerWidget {
 
     return SizedBox(
       width: 300, // Ancho fijo
-      height: 180, // Alto fijo
+      height: 200, // Alto fijo
       child: Card(
         color: Colors.white,
         elevation: 5,
@@ -57,19 +62,19 @@ class CommentCardBox extends HookConsumerWidget {
               const SizedBox(height: 5),
 
               // Contenido del comentario
-              Expanded(
-                child: Text(
-                  comment.content,
-                  style: const TextStyle(fontSize: 16),
-                  maxLines: 4, // Limita a 4 líneas
-                  overflow: TextOverflow.ellipsis, // Añade "..." si el texto es demasiado largo
+
+              Flexible(
+                child: SingleChildScrollView(
+                  child: Text(comment.content,
+                      style: const TextStyle(fontSize: 16), maxLines: null),
                 ),
               ),
+
               const SizedBox(height: 5),
 
               // Fecha de creación del comentario
               Text(
-                "Creado en: $formattedDate",
+                "A fecha de: $formattedDate",
                 style: const TextStyle(fontSize: 14),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
@@ -93,23 +98,36 @@ class CommentCardBox extends HookConsumerWidget {
                     ? TextButton(
                         onPressed: () async {
                           final bool value = true;
-                          final String email = comment.rating?.user?.email ?? 'not email';
-                          final result = await hideCommentUseCase.call(value, title, releaseDate, email);
-                          result.fold(
-                            (failure){
-                              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Error al ocultar el comentario"),
-                              backgroundColor: Colors.red)
-                              );
-                            },
-                            (_){
-                              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Comentario ocultado"), 
-                              backgroundColor: Colors.green,)
-                              );
-                            }
-                          );
+                          final String email =
+                              comment.rating?.user?.email ?? 'not email';
+                          final result = await hideCommentUseCase.call(
+                              value, title, releaseDate, email);
+                          result.fold((failure) {
+                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                                content: Text("Error al ocultar el comentario"),
+                                backgroundColor: Colors.red));
+                          }, (_) {
+                            ScaffoldMessenger.of(context)
+                                .showSnackBar(const SnackBar(
+                              content: Text("Comentario ocultado"),
+                              backgroundColor: Colors.green,
+                            ));
+                            Navigator.pushAndRemoveUntil(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => VideogameView(
+                                      title: title,
+                                      releaseDate: releaseDate,
+                                      imageData: imageData,
+                                      user: user)),
+                              (Route<dynamic> route) =>
+                                  false, // Elimina todas las rutas anteriores
+                            );
+                          });
                         },
                         style: TextButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 8, vertical: 4),
                           backgroundColor: const Color(0xff1971c2),
                           foregroundColor: Colors.white,
                           shape: RoundedRectangleBorder(

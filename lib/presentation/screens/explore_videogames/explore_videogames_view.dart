@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:ivdb/domain/entities/user_entity.dart';
 import 'package:ivdb/presentation/screens/add_videogame/add_videogame_view.dart';
@@ -7,6 +8,7 @@ import 'package:ivdb/presentation/viewmodels/explore_videogames/explore_videogam
 import 'package:ivdb/presentation/widgets/explore_videogames/videogame_card_box.dart';
 import 'package:ivdb/presentation/widgets/explore_videogames/videogames_filter_box.dart';
 import 'package:ivdb/presentation/widgets/shared/exit_door_box.dart';
+import 'package:ivdb/presentation/screens/request_privilege/request_privilege_view.dart';
 import 'package:ivdb/presentation/widgets/shared/home_box.dart';
 import 'package:ivdb/presentation/viewmodels/explore_videogames/explore_videogames_viewmodel.dart';
 
@@ -33,6 +35,13 @@ class ExploreVideogamesView extends HookConsumerWidget {
     } else {
       crossAxisCount = 1; // 1 columna y 8 filas
     }
+
+    useEffect(() {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        exploreVideogamesViewModel.exploreVideogames(8, 1, 'A-Z');
+      });
+      return null;
+    }, []);
 
     return Scaffold(
       appBar: AppBar(
@@ -74,8 +83,10 @@ class ExploreVideogamesView extends HookConsumerWidget {
                       ),
                     if (user.roleId == 1) const SizedBox(width: 10),
                     if (user.roleId == 1)
-                      TextButton(
-                          child: const Text('Evaluar Usuarios'),
+                      Flexible(
+                        child: TextButton(
+                          child: const Text('Evaluar Usuarios',
+                              textAlign: TextAlign.center),
                           onPressed: () {
                             // Navegar a la pantalla de evaluación de usuarios
                             Navigator.pushReplacement(
@@ -85,7 +96,9 @@ class ExploreVideogamesView extends HookConsumerWidget {
                                     ShowApplicationsView(user),
                               ),
                             );
-                          }),
+                          },
+                        ),
+                      ),
                     if (user.roleId == 2)
                       const Icon(
                         Icons.person,
@@ -93,11 +106,21 @@ class ExploreVideogamesView extends HookConsumerWidget {
                       ),
                     if (user.roleId == 2) const SizedBox(width: 10),
                     if (user.roleId == 2)
-                      TextButton(
-                          child: const Text('Solicitar Privilegios'),
+                      Flexible(
+                        child: TextButton(
+                          child: const Text('Solicitar Privilegios',
+                              textAlign: TextAlign.center),
                           onPressed: () {
-                            print('Solicitar privilegio de critico');
-                          }),
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    RequestPrivilegeView(user: user),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
                     if (user.roleId == 3)
                       const Icon(
                         Icons.star,
@@ -146,7 +169,7 @@ class ExploreVideogamesView extends HookConsumerWidget {
                         alignment: Alignment.center,
                         onPressed: () {
                           Navigator.push(
-                            context, 
+                            context,
                             MaterialPageRoute(
                               builder: (context) => const AddVideogameView(),
                             ),
@@ -171,32 +194,24 @@ class ExploreVideogamesView extends HookConsumerWidget {
                   Text(exploreVideogamesState.errorMessage.toString())
                 else
                   SizedBox(
-                    height: size.height * 0.9,
+                    height: size.height -
+                        kToolbarHeight -
+                        400, // Ajusta este valor según sea necesario
                     child: GridView.builder(
                       shrinkWrap: true,
                       physics: const ScrollPhysics(),
                       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: crossAxisCount,
-                          crossAxisSpacing: 10,
-                          mainAxisSpacing: 10,
-                          childAspectRatio: 3 / 4),
+                        crossAxisCount: crossAxisCount,
+                        crossAxisSpacing: 10,
+                        mainAxisSpacing: 10,
+                        childAspectRatio: 3 / 4,
+                      ),
                       itemCount: exploreVideogamesState.videogames!.length,
                       itemBuilder: (context, index) {
                         final videogame =
                             exploreVideogamesState.videogames![index];
                         return VideogameCardBox(
-                          title: videogame.title,
-                          description: videogame.description,
-                          id: videogame.id,
-                          releaseDate: videogame.releaseDate,
-                          developers: videogame.developers!,
-                          genres: videogame.genres!,
-                          platforms: videogame.platforms!,
-                          imageData: videogame.imageData!,
-                          criticAvgRating:
-                              videogame.criticAvgRating?.toInt() ?? 0,
-                          publicAvgRating:
-                              videogame.publicAvgRating?.toInt() ?? 0,
+                          videogame: videogame,
                           user: user,
                         );
                       },
