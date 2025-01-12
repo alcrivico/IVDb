@@ -1,7 +1,7 @@
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
-import 'package:ivdb/presentation/widgets/add_videogame/videogame_combo_box.dart';
 import 'package:ivdb/presentation/widgets/add_videogame/videogame_image.dart';
+import 'package:ivdb/presentation/widgets/add_videogame/videogame_multi_combo_box.dart';
 import 'package:ivdb/presentation/widgets/shared/button_box.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:ivdb/presentation/viewmodels/add_videogame/add_videogame_viewmodel.dart';
@@ -15,9 +15,9 @@ class AddVideogameView extends ConsumerStatefulWidget {
 }
 
 class _AddVideogameViewState extends ConsumerState<AddVideogameView> {
-  String? selectedDeveloper;
-  String? selectedGenre;
-  String? selectedPlatform;
+  List<String> selectedDevelopers = [];
+  List<String> selectedGenres = [];
+  List<String> selectedPlatforms = [];
   Uint8List? selectedImageBytes;
   String? selectedImagePath;
   final TextEditingController releaseDateController = TextEditingController();
@@ -79,19 +79,17 @@ class _AddVideogameViewState extends ConsumerState<AddVideogameView> {
       title: title,
       description: description,
       releaseDate: releaseDate,
-      imageRoute: selectedImagePath ?? '',
+      imageRoute: selectedImagePath?.split(RegExp(r'[/\\]')).last ?? '',
       imageBytes: selectedImageBytes!,
-      developers: selectedDeveloper,
-      platforms: selectedPlatform,
-      genres: selectedGenre,
+      developers: selectedDevelopers.join(', '),
+      platforms: selectedPlatforms.join(', '),
+      genres: selectedGenres.join(', '),
     );
   }
 
   @override
   Widget build(BuildContext context) {
     final addVideogameState = ref.watch(addVideogameViewModelProvider);
-    final addVideogameViewModel =
-        ref.read(addVideogameViewModelProvider.notifier);
 
     return Scaffold(
       appBar: AppBar(
@@ -120,39 +118,39 @@ class _AddVideogameViewState extends ConsumerState<AddVideogameView> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Expanded(
-                    child: VideogameComboBox(
+                    child: VideoGameMultiSelectComboBox(
                       title: "Desarrolladores",
                       items: developers.keys.toList(),
-                      selectedItem: selectedDeveloper,
-                      onChanged: (value) {
+                      selectedItems: selectedDevelopers,
+                      onSelectionChanged: (selected) {
                         setState(() {
-                          selectedDeveloper = value;
+                          selectedDevelopers = selected;
                         });
                       },
                     ),
                   ),
                   const SizedBox(width: 10),
                   Expanded(
-                    child: VideogameComboBox(
+                    child: VideoGameMultiSelectComboBox(
                       title: "Géneros",
                       items: genres.keys.toList(),
-                      selectedItem: selectedGenre,
-                      onChanged: (value) {
+                      selectedItems: selectedGenres,
+                      onSelectionChanged: (selected) {
                         setState(() {
-                          selectedGenre = value;
+                          selectedGenres = selected;
                         });
                       },
                     ),
                   ),
                   const SizedBox(width: 10),
                   Expanded(
-                    child: VideogameComboBox(
+                    child: VideoGameMultiSelectComboBox(
                       title: "Plataformas",
                       items: platforms.keys.toList(),
-                      selectedItem: selectedPlatform,
-                      onChanged: (value) {
+                      selectedItems: selectedPlatforms,
+                      onSelectionChanged: (selected) {
                         setState(() {
-                          selectedPlatform = value;
+                          selectedPlatforms = selected;
                         });
                       },
                     ),
@@ -203,16 +201,24 @@ class _AddVideogameViewState extends ConsumerState<AddVideogameView> {
                   ),
                   if (addVideogameState.status == AddVideogameStatus.loading)
                     const CircularProgressIndicator(),
-                  if (addVideogameState == AddVideogameStatus.error)
+                  if (addVideogameState.status == AddVideogameStatus.error)
                     const Text(
                       'No se pudo agregar el videojuego',
                       style: TextStyle(color: Colors.red),
                     ),
-                  if (addVideogameState == AddVideogameStatus.success)
-                    const Text(
-                      'Videojuego agregado con éxito',
-                      style: TextStyle(color: Colors.green),
-                    ),
+                  if (addVideogameState.status == AddVideogameStatus.success)
+                    Column(
+                      children: [
+                        const Text(
+                          '¡Videojuego agregado con éxito!',
+                          style: TextStyle(
+                          color: Colors.green,
+                          fontSize: 24,  // Tamaño de fuente grande
+                          fontWeight: FontWeight.bold,
+                          ),
+                        ),                       
+                      ],
+                    ),              
                 ],
               ),
             ],
