@@ -5,12 +5,15 @@ enum VideogameStatus {
   loadingVideogame,
   loadingDeleting,
   loadingRating,
+  loadingComment,
   successVideogame,
   successDeleting,
   successRating,
+  successComment,
   errorVideogame,
   errorDeleting,
   errorRating,
+  errorComment
 }
 
 class VideogameState {
@@ -18,6 +21,7 @@ class VideogameState {
   final String? errorMessage;
   final VideogameEntity? videogame;
   final int rate;
+  //final String comment;
 
   VideogameState({
     required this.status,

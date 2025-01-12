@@ -4,7 +4,9 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:ivdb/domain/entities/user_entity.dart';
+import 'package:ivdb/domain/usecases/comment_videogame_usecase.dart';
 import 'package:ivdb/presentation/screens/explore_videogames/explore_videogames_view.dart';
+import 'package:ivdb/presentation/viewmodels/videogame/comment_state.dart';
 import 'package:ivdb/presentation/viewmodels/videogame/rate_state.dart';
 import 'package:ivdb/presentation/viewmodels/videogame/videogame_state.dart';
 import 'package:ivdb/presentation/viewmodels/videogame/videogames_viewmodel.dart';
@@ -38,6 +40,9 @@ class VideogameView extends HookConsumerWidget {
     final videogameState = ref.watch(videogameViewModelProvider);
     final videogameViewModel = ref.read(videogameViewModelProvider.notifier);
     final rateState = ref.watch(rateViewModelProvider);
+    final commentState = ref.watch(commentViewModelProvider.notifier);
+    final commentVideogame = ref.watch(commentVideogameUseCaseProvider);
+    final commentStateAux = ref.watch(commentViewModelProvider);
     final rateViewModel = ref.read(rateViewModelProvider.notifier);
     final int? sessionRole = user.roleId;
     final DateFormat dateFormat = DateFormat('dd/MM/yyyy');
@@ -45,6 +50,8 @@ class VideogameView extends HookConsumerWidget {
     final String formattedDate = dateFormat.format(releaseDate);
     final DateTime rightFormattedDate =
         DateTime.parse(rightDateFormat.format(releaseDate));
+    final showCommentsUseCase = ref.watch(showCommentsUseCaseProvider);
+    final TextEditingController commentController = TextEditingController();
 
     useEffect(() {
       Future.microtask(() async {
@@ -57,11 +64,14 @@ class VideogameView extends HookConsumerWidget {
           await rateViewModel.getVideogameRate(
               title, rightFormattedDate, user.email);
         });
+
+        Future.microtask(() async {
+          await commentState.getComment(
+            title, releaseDate, user.email);
+        });
       }
       return null;
     }, []);
-
-    final showCommentsUseCase = ref.watch(showCommentsUseCaseProvider);
 
     Widget rated = Container();
 
@@ -299,7 +309,7 @@ class VideogameView extends HookConsumerWidget {
                     children: [
                       TextButton(
                         onPressed: () {
-                          print('Editar videojuego');
+                          //print('Editar videojuego');
                         },
                         style: ButtonStyle(
                           backgroundColor:
@@ -467,6 +477,59 @@ class VideogameView extends HookConsumerWidget {
                                   user: user,
                                 ),
                               ),
+                            
+                            const SizedBox(height: 20),
+                            if (user.roleId != 1  
+                            && rateState.status == RateStatus.success
+                            && commentStateAux.status == CommentStatus.noComment) ...[
+                              const Text(
+                                "Añade un comentario:",
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold
+                                ),
+                              ),
+                              const SizedBox(height: 10),
+                              TextField(
+                                controller: commentController,
+                                decoration: InputDecoration(
+                                  hintText: "Escribe tu comentario...",
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: 10,),
+                              ElevatedButton(
+                                onPressed: () async {
+                                  //Funcionalidad de enviar comentario
+                                  final String email = user.email;
+                                  final String comment = commentController.text;
+                                  if(comment.isEmpty) {
+                                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                                      content: Text("El comentario no puede estar vacio"),
+                                      backgroundColor: Colors.orange,
+                                      ));
+                                    return;
+                                  }
+                                  final result = await commentVideogame.call(email, title, 
+                                  releaseDate, comment);
+                                  result.fold(
+                                    (sucess) {
+                                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content:
+                                      Text("Comentario enviado"),
+                                      backgroundColor: Colors.green,
+                                      ));
+                                      commentController.clear();
+                                    }, (_) {
+                                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: 
+                                      Text("Error al enviar el comentario"),
+                                      backgroundColor: Colors.red,));
+                                    }
+                                  );
+                              }, child: const Text("Enviar comentario"))
+                            ],
+                            const SizedBox(height: 70),
                           ],
                         );
                       },
