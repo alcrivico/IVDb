@@ -120,7 +120,7 @@ class UserService implements IUserService {
 
     final response = await restClient.dio.post('/user/application', data: data);
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       return ApplicationModel.fromJson(response.data);
     } else {
       throw ServerException(response.data['message']);

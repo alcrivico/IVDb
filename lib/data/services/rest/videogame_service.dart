@@ -218,14 +218,17 @@ class VideogameService implements IVideogameService {
       String developers,
       String platforms,
       String genres) async {
+    List<String> developersArray = developers.split(', ');
+    List<String> platformsArray = platforms.split(', ');
+    List<String> genresArray = genres.split(', ');
     final data = {
       'title': title,
       'description': description,
       'releaseDate': releaseDate.toIso8601String(),
       'imageRoute': imageRoute,
-      'developers': developers,
-      'platforms': platforms,
-      'genres': genres
+      'developers': developersArray,
+      'platforms': platformsArray,
+      'genres': genresArray,
     };
 
     final response = await restClient.dio.post('/videogame/add', data: data);
@@ -250,6 +253,9 @@ class VideogameService implements IVideogameService {
       String newDevelopers,
       String newGenres,
       String newPlatforms) async {
+    List<String> newDevelopersArray = newDevelopers.split(', ');
+    List<String> newPlatformsArray = newPlatforms.split(', ');
+    List<String> newGenresArray = newGenres.split(', ');
     final data = {
       'title': title,
       'releaseDate': releaseDate.toIso8601String(),
@@ -257,9 +263,9 @@ class VideogameService implements IVideogameService {
       'newDescription': newDescription,
       'newReleaseDate': newReleaseDate.toIso8601String(),
       'newImageRoute': newImageRoute,
-      'newDevelopers': newDevelopers,
-      'newGenres': newGenres,
-      'newPlatforms': newPlatforms,
+      'newDevelopers': newDevelopersArray,
+      'newGenres': newGenresArray,
+      'newPlatforms': newPlatformsArray,
     };
 
     final response =

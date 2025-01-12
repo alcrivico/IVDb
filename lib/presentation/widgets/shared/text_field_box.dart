@@ -42,13 +42,9 @@ class TextFieldBox extends StatelessWidget {
     );
 
     return TextFormField(
-        controller: controller,
-        decoration: inputDecoration,
-        obscureText: obscureText,
-        onTapOutside: (event) {
-          if (controller.text.isEmpty) {
-            FocusScope.of(context).requestFocus(FocusNode());
-          }
-        });
+      controller: controller,
+      decoration: inputDecoration,
+      obscureText: obscureText,
+    );
   }
 }
