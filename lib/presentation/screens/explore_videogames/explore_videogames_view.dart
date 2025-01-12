@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -21,6 +24,17 @@ class ExploreVideogamesView extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final Size size = MediaQuery.of(context).size;
 
+    final pageCounter = useState(1);
+    final itemCount = useState(0);
+    final actualFilter = useState('A-Z');
+
+    double cardsSpan = size.height - kToolbarHeight - 400;
+
+    if (!kIsWeb &&
+        (Platform.isWindows || Platform.isLinux || Platform.isMacOS)) {
+      cardsSpan = size.height * 0.9;
+    }
+
     final exploreVideogamesState =
         ref.watch(exploreVideogamesViewmodelProvider);
     final exploreVideogamesViewModel =
@@ -38,10 +52,16 @@ class ExploreVideogamesView extends HookConsumerWidget {
 
     useEffect(() {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        exploreVideogamesViewModel.exploreVideogames(8, 1, 'A-Z');
+        exploreVideogamesViewModel.exploreVideogames(
+            8, pageCounter.value, actualFilter.value);
       });
       return null;
     }, []);
+
+    useEffect(() {
+      itemCount.value = exploreVideogamesState.videogames?.length ?? 0;
+      return null;
+    }, [exploreVideogamesState.videogames]);
 
     return Scaffold(
       appBar: AppBar(
@@ -155,9 +175,11 @@ class ExploreVideogamesView extends HookConsumerWidget {
                           return VideogamesFilterBox(
                             filter: filter['text']!,
                             onPressed: () {
+                              actualFilter.value = filter['action']!;
+                              pageCounter.value = 1;
                               exploreVideogamesViewModel.restart();
                               exploreVideogamesViewModel.exploreVideogames(
-                                  8, 1, filter['action']!);
+                                  8, 1, actualFilter.value);
                             },
                             isSelected: false,
                           );
@@ -171,7 +193,9 @@ class ExploreVideogamesView extends HookConsumerWidget {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => const AddVideogameView(),
+                              builder: (context) => AddVideogameView(
+                                user: user,
+                              ),
                             ),
                           );
                         },
@@ -194,9 +218,7 @@ class ExploreVideogamesView extends HookConsumerWidget {
                   Text(exploreVideogamesState.errorMessage.toString())
                 else
                   SizedBox(
-                    height: size.height -
-                        kToolbarHeight -
-                        400, // Ajusta este valor según sea necesario
+                    height: cardsSpan, // Ajusta este valor según sea necesario
                     child: GridView.builder(
                       shrinkWrap: true,
                       physics: const ScrollPhysics(),
@@ -217,6 +239,37 @@ class ExploreVideogamesView extends HookConsumerWidget {
                       },
                     ),
                   ),
+                const SizedBox(height: 20),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.arrow_back_rounded, size: 30),
+                      color: Color(0xff1971c2),
+                      disabledColor: Colors.grey,
+                      onPressed: pageCounter.value == 1
+                          ? null
+                          : () {
+                              pageCounter.value--;
+                              exploreVideogamesViewModel.exploreVideogames(
+                                  8, pageCounter.value, actualFilter.value);
+                            },
+                    ),
+                    const SizedBox(width: 20),
+                    IconButton(
+                      icon: const Icon(Icons.arrow_forward_rounded, size: 30),
+                      color: Color(0xff1971c2),
+                      disabledColor: Colors.grey,
+                      onPressed: itemCount.value < 8
+                          ? null
+                          : () {
+                              pageCounter.value++;
+                              exploreVideogamesViewModel.exploreVideogames(
+                                  8, pageCounter.value, actualFilter.value);
+                            },
+                    ),
+                  ],
+                ),
               ],
             ),
           ),

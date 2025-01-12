@@ -37,7 +37,9 @@ class _MultiSelectComboBoxState extends State<VideoGameMultiSelectComboBox> {
         _selectedItems.add(item);
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Solo puedes seleccionar hasta ${widget.maxSelection} ${widget.title.toLowerCase()}.')),
+          SnackBar(
+              content: Text(
+                  'Solo puedes seleccionar hasta ${widget.maxSelection} ${widget.title.toLowerCase()}.')),
         );
       }
     });
@@ -66,6 +68,7 @@ class _MultiSelectComboBoxState extends State<VideoGameMultiSelectComboBox> {
             );
           }).toList(),
         ),
+        const SizedBox(height: 15),
         DropdownButtonFormField<String>(
           decoration: InputDecoration(
             labelText: "Selecciona ${widget.title.toLowerCase()}",

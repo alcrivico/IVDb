@@ -101,12 +101,12 @@ class VideogameView extends HookConsumerWidget {
       appBar: AppBar(
         title: HomeBox(
           onPressed: () {
-            Navigator.pushReplacement(
+            Navigator.pushAndRemoveUntil(
               context,
               MaterialPageRoute(
-                  builder: (context) => ExploreVideogamesView(
-                        user,
-                      )),
+                  builder: (context) => ExploreVideogamesView(user)),
+              (Route<dynamic> route) =>
+                  false, // Elimina todas las rutas anteriores
             );
           },
         ),

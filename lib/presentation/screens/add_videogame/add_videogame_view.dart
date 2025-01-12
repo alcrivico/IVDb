@@ -1,14 +1,19 @@
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
+import 'package:ivdb/domain/entities/user_entity.dart';
+import 'package:ivdb/presentation/screens/explore_videogames/explore_videogames_view.dart';
 import 'package:ivdb/presentation/widgets/add_videogame/videogame_image.dart';
 import 'package:ivdb/presentation/widgets/add_videogame/videogame_multi_combo_box.dart';
 import 'package:ivdb/presentation/widgets/shared/button_box.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:ivdb/presentation/viewmodels/add_videogame/add_videogame_viewmodel.dart';
 import 'package:ivdb/presentation/viewmodels/add_videogame/add_videogame_state.dart';
+import 'package:ivdb/presentation/widgets/shared/exit_door_box.dart';
+import 'package:ivdb/presentation/widgets/shared/home_box.dart';
 
 class AddVideogameView extends ConsumerStatefulWidget {
-  const AddVideogameView({super.key});
+  final UserEntity user;
+  const AddVideogameView({super.key, required this.user});
 
   @override
   ConsumerState<AddVideogameView> createState() => _AddVideogameViewState();
@@ -93,8 +98,18 @@ class _AddVideogameViewState extends ConsumerState<AddVideogameView> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Agregar Videojuego'),
-        backgroundColor: const Color(0xff1971c2),
+        title: HomeBox(
+          onPressed: () {
+            Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => ExploreVideogamesView(widget.user)),
+              (Route<dynamic> route) =>
+                  false, // Elimina todas las rutas anteriores
+            );
+          },
+        ),
+        actions: [ExitDoorBox()],
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -114,48 +129,54 @@ class _AddVideogameViewState extends ConsumerState<AddVideogameView> {
                 ),
               ),
               const SizedBox(height: 20),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Expanded(
-                    child: VideoGameMultiSelectComboBox(
-                      title: "Desarrolladores",
-                      items: developers.keys.toList(),
-                      selectedItems: selectedDevelopers,
-                      onSelectionChanged: (selected) {
-                        setState(() {
-                          selectedDevelopers = selected;
-                        });
-                      },
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(
+                      width: 300, // Ajusta este valor según sea necesario
+                      child: VideoGameMultiSelectComboBox(
+                        title: "Desarrolladores",
+                        items: developers.keys.toList(),
+                        selectedItems: selectedDevelopers,
+                        onSelectionChanged: (selected) {
+                          setState(() {
+                            selectedDevelopers = selected;
+                          });
+                        },
+                      ),
                     ),
-                  ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: VideoGameMultiSelectComboBox(
-                      title: "Géneros",
-                      items: genres.keys.toList(),
-                      selectedItems: selectedGenres,
-                      onSelectionChanged: (selected) {
-                        setState(() {
-                          selectedGenres = selected;
-                        });
-                      },
+                    const SizedBox(width: 10),
+                    SizedBox(
+                      width: 300, // Ajusta este valor según sea necesario
+                      child: VideoGameMultiSelectComboBox(
+                        title: "Géneros",
+                        items: genres.keys.toList(),
+                        selectedItems: selectedGenres,
+                        onSelectionChanged: (selected) {
+                          setState(() {
+                            selectedGenres = selected;
+                          });
+                        },
+                      ),
                     ),
-                  ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: VideoGameMultiSelectComboBox(
-                      title: "Plataformas",
-                      items: platforms.keys.toList(),
-                      selectedItems: selectedPlatforms,
-                      onSelectionChanged: (selected) {
-                        setState(() {
-                          selectedPlatforms = selected;
-                        });
-                      },
+                    const SizedBox(width: 10),
+                    SizedBox(
+                      width: 300, // Ajusta este valor según sea necesario
+                      child: VideoGameMultiSelectComboBox(
+                        title: "Plataformas",
+                        items: platforms.keys.toList(),
+                        selectedItems: selectedPlatforms,
+                        onSelectionChanged: (selected) {
+                          setState(() {
+                            selectedPlatforms = selected;
+                          });
+                        },
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
               const SizedBox(height: 20),
               Column(
@@ -212,13 +233,13 @@ class _AddVideogameViewState extends ConsumerState<AddVideogameView> {
                         const Text(
                           '¡Videojuego agregado con éxito!',
                           style: TextStyle(
-                          color: Colors.green,
-                          fontSize: 24,  // Tamaño de fuente grande
-                          fontWeight: FontWeight.bold,
+                            color: Colors.green,
+                            fontSize: 24, // Tamaño de fuente grande
+                            fontWeight: FontWeight.bold,
                           ),
-                        ),                       
+                        ),
                       ],
-                    ),              
+                    ),
                 ],
               ),
             ],

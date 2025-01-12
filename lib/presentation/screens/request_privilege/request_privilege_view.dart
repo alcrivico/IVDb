@@ -4,6 +4,8 @@ import 'package:ivdb/domain/entities/user_entity.dart';
 import 'package:ivdb/presentation/screens/explore_videogames/explore_videogames_view.dart';
 import 'package:ivdb/presentation/viewmodels/request_privilege/request_privilege_state.dart';
 import 'package:ivdb/presentation/viewmodels/request_privilege/request_privilege_viewmodel.dart';
+import 'package:ivdb/presentation/widgets/shared/exit_door_box.dart';
+import 'package:ivdb/presentation/widgets/shared/home_box.dart';
 
 class RequestPrivilegeView extends ConsumerWidget {
   final UserEntity user;
@@ -13,8 +15,6 @@ class RequestPrivilegeView extends ConsumerWidget {
     required this.user,
   });
 
-
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final requestPrivilegeState = ref.watch(requestPrivilegeViewModelProvider);
@@ -23,15 +23,15 @@ class RequestPrivilegeView extends ConsumerWidget {
 
     final TextEditingController motiveController = TextEditingController();
 
-    ref.listen<RequestPrivilegeState>(requestPrivilegeViewModelProvider, (previous, next) {
+    ref.listen<RequestPrivilegeState>(requestPrivilegeViewModelProvider,
+        (previous, next) {
       if (next.status == RequestPrivilegeStatus.success) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
           Navigator.pushAndRemoveUntil(
             context,
             MaterialPageRoute(
                 builder: (context) => ExploreVideogamesView(user)),
-            (Route<dynamic> route) =>
-                false, 
+            (Route<dynamic> route) => false,
           );
         });
       }
@@ -39,23 +39,18 @@ class RequestPrivilegeView extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'Solicitar Privilegios',
-          style: TextStyle(color: Colors.white),
-        ),
-        backgroundColor: const Color(0xff1971c2),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
+        title: HomeBox(
           onPressed: () {
             Navigator.pushAndRemoveUntil(
-            context,
-            MaterialPageRoute(
-                builder: (context) => ExploreVideogamesView(user)),
-            (Route<dynamic> route) =>
-                false, 
-          );
+              context,
+              MaterialPageRoute(
+                  builder: (context) => ExploreVideogamesView(user)),
+              (Route<dynamic> route) =>
+                  false, // Elimina todas las rutas anteriores
+            );
           },
         ),
+        actions: [ExitDoorBox()],
       ),
       body: Padding(
         padding: const EdgeInsets.all(20.0),
@@ -89,9 +84,8 @@ class RequestPrivilegeView extends ConsumerWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                ElevatedButton( 
-                  onPressed: 
-                  requestPrivilegeState.status ==
+                ElevatedButton(
+                  onPressed: requestPrivilegeState.status ==
                           RequestPrivilegeStatus.loading
                       ? null
                       : () {
@@ -101,7 +95,6 @@ class RequestPrivilegeView extends ConsumerWidget {
                                 content: Text('Por favor escribe un motivo.'),
                               ),
                             );
-                            
                           } else {
                             requestPrivilegeViewModel.restart();
                             requestPrivilegeViewModel.sendRequest(
