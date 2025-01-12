@@ -14,11 +14,17 @@ void main() {
   runApp(ProviderScope(child: MyApp()));
 }
 
-void setWindowSize() {
+void setWindowSize() async {
   const minSize = Size(400, 800);
   const maxSize = Size(2560, 1440);
+
   window_size.setWindowMinSize(minSize);
   window_size.setWindowMaxSize(maxSize);
+  window_size.setWindowTitle('IVDb');
+
+  final screen = await window_size.getWindowInfo();
+
+  window_size.setWindowFrame(screen.frame);
 }
 
 class MyApp extends ConsumerWidget {

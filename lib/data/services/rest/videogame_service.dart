@@ -1,56 +1,307 @@
 import 'package:dio/dio.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:ivdb/core/exceptions/fail_exception.dart';
+import 'package:ivdb/data/models/comment_model.dart';
+import 'package:ivdb/data/models/rating_model.dart';
+import 'package:ivdb/data/models/videogame_model.dart';
 import 'rest_client.dart';
 
-class VideogameService {
-  final RestClient _restClient;
+abstract class IVideogameService {
+  Future<VideogameModel> showVideogame(String title, DateTime releaseDate);
 
-  VideogameService(this._restClient);
+  Future<List<VideogameModel>> showVideogamesList(
+      {required int limit, required int page, required String filter});
 
-  // Obtener información de un videojuego por título y fecha de lanzamiento
-  Future<Response> fetchVideogame(String title, String releaseDate) async {
-    return await _restClient.dio.get('/single/$title/$releaseDate');
+  Future<RatingModel> showUserRating(
+      String title, DateTime releaseDate, String email);
+
+  Future<CommentModel> showUserComment(
+      String title, DateTime releaseDate, String email);
+
+  Future<List<CommentModel>> showCriticComments(
+      String title, DateTime releaseDate);
+
+  Future<List<CommentModel>> showPublicComments(
+      String title, DateTime releaseDate);
+
+  Future<CommentModel> hideComment(
+      bool value, String title, DateTime releaseDate, String email);
+
+  Future<VideogameModel> uploadVideogame(
+      String title,
+      String description,
+      DateTime releaseDate,
+      String imageRoute,
+      String developers,
+      String platforms,
+      String genres);
+
+  Future<Map<String, dynamic>> updateVideogame(
+      String title,
+      DateTime releaseDate,
+      String newTitle,
+      String newDescription,
+      DateTime newReleaseDate,
+      String newImageRoute,
+      String newDevelopers,
+      String newGenres,
+      String newPlatforms);
+
+  Future<Map<String, dynamic>> deleteVideogame(
+      String title, DateTime releaseDate);
+}
+
+class VideogameService implements IVideogameService {
+  VideogameService({required this.restClient});
+
+  final RestClient restClient;
+
+  @override
+  Future<VideogameModel> showVideogame(
+      String title, DateTime releaseDate) async {
+    String month = releaseDate.month.toString().length == 1
+        ? '0${releaseDate.month}'
+        : releaseDate.month.toString();
+    String date = '${releaseDate.year}-${month}-${releaseDate.day}';
+    final response = await restClient.dio.get('/videogame/single/$title/$date');
+
+    if (response.statusCode == 200) {
+      final videogame = VideogameModel.fromJson(response.data);
+
+      return videogame;
+    } else {
+      throw ServerException(response.data['message']);
+    }
   }
 
-  // Obtener una lista de videojuegos con paginación y filtros
-  Future<Response> fetchVideogames(
+  @override
+  Future<List<VideogameModel>> showVideogamesList(
       {required int limit, required int page, required String filter}) async {
-    return await _restClient.dio.get('/group/$limit/$page/$filter');
+    final response =
+        await restClient.dio.get('/videogame/group/$limit/$page/$filter');
+
+    if (response.statusCode == 200) {
+      final videogames = response.data
+          .map<VideogameModel>((json) => VideogameModel.fromJson(json))
+          .toList();
+
+      return videogames;
+    } else {
+      throw ServerException(response.data['message']);
+    }
   }
 
-  // Obtener un comentario de usuario
-  Future<Response> fetchUserComment() async {
-    return await _restClient.dio.get('/comment');
+  @override
+  Future<RatingModel> showUserRating(
+      String title, DateTime releaseDate, String email) async {
+    final data = {
+      'title': title,
+      'releaseDate': releaseDate.toIso8601String(),
+      'email': email,
+    };
+
+    try {
+      final response =
+          await restClient.dio.get('/videogame/rating/', data: data);
+
+      if (response.statusCode == 200) {
+        final rating = RatingModel.fromJson(response.data);
+
+        return rating;
+      } else {
+        throw ServerException(response.data['message']);
+      }
+    } on DioException catch (e) {
+      if (e.response?.statusCode == 404) {
+        throw ServerException('Calificación no encontrada');
+      } else {
+        throw ServerException(e.response?.data['message']);
+      }
+    } catch (e) {
+      throw ServerException(e.toString());
+    }
   }
 
-  // Obtener comentarios críticos
-  Future<Response> fetchCriticComments() async {
-    return await _restClient.dio.get('/comments/critic');
+  @override
+  Future<CommentModel> showUserComment(
+      String title, DateTime releaseDate, String email) async {
+    final data = {
+      'title': title,
+      'releaseDate': releaseDate.toIso8601String(),
+      'email': email,
+    };
+
+    final response =
+        await restClient.dio.get('/videogame/comment/', data: data);
+
+    if (response.statusCode == 200) {
+      final comment = CommentModel.fromJson(response.data);
+
+      return comment;
+    } else {
+      throw ServerException(response.data['message']);
+    }
   }
 
-  // Obtener comentarios públicos
-  Future<Response> fetchPublicComments() async {
-    return await _restClient.dio.get('/comments/public');
+  @override
+  Future<List<CommentModel>> showCriticComments(
+      String title, DateTime releaseDate) async {
+    final data = {
+      'title': title,
+      'releaseDate': releaseDate.toIso8601String(),
+    };
+
+    final response =
+        await restClient.dio.get('/videogame/comments/critic', data: data);
+
+    if (response.statusCode == 200) {
+      final comments = response.data
+          .map<CommentModel>((json) => CommentModel.fromJson(json))
+          .toList();
+
+      return comments;
+    } else {
+      throw ServerException(response.data['message']);
+    }
   }
 
-  // Ocultar un comentario
-  Future<Response> hideComment(String commentId) async {
-    final data = {'commentId': commentId};
-    return await _restClient.dio.patch('/comment/hide', data: data);
+  @override
+  Future<List<CommentModel>> showPublicComments(
+      String title, DateTime releaseDate) async {
+    final data = {
+      'title': title,
+      'releaseDate': releaseDate.toIso8601String(),
+    };
+
+    final response =
+        await restClient.dio.get('/videogame/comments/public', data: data);
+
+    if (response.statusCode == 200) {
+      final comments = response.data
+          .map<CommentModel>((json) => CommentModel.fromJson(json))
+          .toList();
+
+      return comments;
+    } else {
+      throw ServerException(response.data['message']);
+    }
   }
 
-  // Agregar un nuevo videojuego
-  Future<Response> addVideogame(Map<String, dynamic> videogameData) async {
-    return await _restClient.dio.post('/add', data: videogameData);
+  @override
+  Future<CommentModel> hideComment(
+      bool value, String title, DateTime releaseDate, String email) async {
+    final data = {
+      'value': value,
+      'title': title,
+      'releaseDate': releaseDate.toIso8601String(),
+      'email': email,
+    };
+
+    final response =
+        await restClient.dio.patch('/videogame/comment/hide', data: data);
+
+    if (response.statusCode == 200) {
+      final comment = CommentModel.fromJson(response.data);
+
+      return comment;
+    } else {
+      throw ServerException(response.data['message']);
+    }
   }
 
-  // Actualizar un videojuego existente
-  Future<Response> updateVideogame(Map<String, dynamic> updatedData) async {
-    return await _restClient.dio.put('/change', data: updatedData);
+  @override
+  Future<VideogameModel> uploadVideogame(
+      String title,
+      String description,
+      DateTime releaseDate,
+      String imageRoute,
+      String developers,
+      String platforms,
+      String genres) async {
+    final data = {
+      'title': title,
+      'description': description,
+      'releaseDate': releaseDate.toIso8601String(),
+      'imageRoute': imageRoute,
+      'developers': developers,
+      'platforms': platforms,
+      'genres': genres
+    };
+
+    final response = await restClient.dio.post('/videogame/add', data: data);
+
+    if (response.statusCode == 201) {
+      final videogame = VideogameModel.fromJson(response.data);
+
+      return videogame;
+    } else {
+      throw ServerException(response.data['message']);
+    }
   }
 
-  // Eliminar un videojuego
-  Future<Response> deleteVideogame(String videogameId) async {
-    final data = {'videogameId': videogameId};
-    return await _restClient.dio.delete('/delete', data: data);
+  @override
+  Future<Map<String, dynamic>> updateVideogame(
+      String title,
+      DateTime releaseDate,
+      String newTitle,
+      String newDescription,
+      DateTime newReleaseDate,
+      String newImageRoute,
+      String newDevelopers,
+      String newGenres,
+      String newPlatforms) async {
+    final data = {
+      'title': title,
+      'releaseDate': releaseDate.toIso8601String(),
+      'newTitle': newTitle,
+      'newDescription': newDescription,
+      'newReleaseDate': newReleaseDate.toIso8601String(),
+      'newImageRoute': newImageRoute,
+      'newDevelopers': newDevelopers,
+      'newGenres': newGenres,
+      'newPlatforms': newPlatforms,
+    };
+
+    final response =
+        await restClient.dio.patch('/videogame/change', data: data);
+
+    if (response.statusCode == 200) {
+      final videogame = VideogameModel.fromJson(response.data['videogame']);
+      final message = response.data['message'];
+
+      return Map<String, dynamic>.from({
+        'videogame': videogame,
+        'message': message,
+      });
+    } else {
+      throw ServerException(response.data['message']);
+    }
+  }
+
+  @override
+  Future<Map<String, dynamic>> deleteVideogame(
+      String title, DateTime releaseDate) async {
+    final data = {
+      'title': title,
+      'releaseDate': releaseDate.toIso8601String(),
+    };
+
+    final response =
+        await restClient.dio.delete('/videogame/delete', data: data);
+
+    if (response.statusCode == 200) {
+      final message = response.data['message'];
+
+      return Map<String, dynamic>.from({
+        'message': message,
+      });
+    } else {
+      throw ServerException(response.data['message']);
+    }
   }
 }
+
+final videogameServiceProvider = Provider<VideogameService>((ref) {
+  final restClient = ref.read(restClientProvider);
+  return VideogameService(restClient: restClient);
+});

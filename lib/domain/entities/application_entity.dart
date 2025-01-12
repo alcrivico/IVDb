@@ -4,6 +4,7 @@ class ApplicationEntity {
   final DateTime? requestDate;
   final bool state;
   final int? userId;
+  final String? email;
 
   ApplicationEntity({
     this.id,
@@ -11,5 +12,6 @@ class ApplicationEntity {
     this.requestDate,
     required this.state,
     this.userId,
+    this.email, 
   });
 }
