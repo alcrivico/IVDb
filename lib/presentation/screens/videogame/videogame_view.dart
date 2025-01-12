@@ -4,7 +4,6 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:ivdb/domain/entities/user_entity.dart';
-import 'package:ivdb/domain/usecases/comment_videogame_usecase.dart';
 import 'package:ivdb/presentation/screens/explore_videogames/explore_videogames_view.dart';
 import 'package:ivdb/presentation/viewmodels/videogame/comment_state.dart';
 import 'package:ivdb/presentation/viewmodels/videogame/rate_state.dart';
@@ -40,9 +39,8 @@ class VideogameView extends HookConsumerWidget {
     final videogameState = ref.watch(videogameViewModelProvider);
     final videogameViewModel = ref.read(videogameViewModelProvider.notifier);
     final rateState = ref.watch(rateViewModelProvider);
-    final commentState = ref.watch(commentViewModelProvider.notifier);
-    final commentVideogame = ref.watch(commentVideogameUseCaseProvider);
-    final commentStateAux = ref.watch(commentViewModelProvider);
+    final commentState = ref.watch(commentViewModelProvider);
+    final commentViewModel = ref.watch(commentViewModelProvider.notifier);
     final rateViewModel = ref.read(rateViewModelProvider.notifier);
     final int? sessionRole = user.roleId;
     final DateFormat dateFormat = DateFormat('dd/MM/yyyy');
@@ -66,14 +64,15 @@ class VideogameView extends HookConsumerWidget {
         });
 
         Future.microtask(() async {
-          await commentState.getComment(
-            title, releaseDate, user.email);
+          await commentViewModel.getComment(title, releaseDate, user.email);
         });
       }
       return null;
     }, []);
 
     Widget rated = Container();
+
+    Widget comment = SizedBox.shrink();
 
     ref.listen<VideogameState>(videogameViewModelProvider, (previous, next) {
       if (next.status == VideogameStatus.successDeleting) {
@@ -92,6 +91,25 @@ class VideogameView extends HookConsumerWidget {
     ref.listen<VideogameState>(videogameViewModelProvider, (previous, next) {
       if (next.status == VideogameStatus.successRating) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
+          Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(
+                builder: (context) => VideogameView(
+                    title: title,
+                    releaseDate: releaseDate,
+                    imageData: imageData,
+                    user: user)),
+            (Route<dynamic> route) =>
+                false, // Elimina todas las rutas anteriores
+          );
+        });
+      }
+    });
+
+    ref.listen<VideogameState>(videogameViewModelProvider, (previous, next) {
+      if (next.status == VideogameStatus.successComment) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          videogameViewModel.restart();
           Navigator.pushAndRemoveUntil(
             context,
             MaterialPageRoute(
@@ -300,7 +318,6 @@ class VideogameView extends HookConsumerWidget {
                 },
               ),
               SizedBox(height: 20),
-
               if (sessionRole == 1)
                 Center(
                   child: Row(
@@ -400,6 +417,124 @@ class VideogameView extends HookConsumerWidget {
                 ),
               // Mostrar comentarios
               const SizedBox(height: 20),
+              if (sessionRole != 1)
+                const Text(
+                  'Comentarios',
+                  style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xff1971c2)),
+                ),
+              Consumer(builder: (context, watch, child) {
+                if (commentState.status == CommentStatus.loading &&
+                    sessionRole != 1) {
+                  comment = const Center(child: CircularProgressIndicator());
+                } else if (commentState.status == CommentStatus.noComment &&
+                    sessionRole != 1) {
+                  comment = Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Añade un comentario: ',
+                        textAlign: TextAlign.left,
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
+                      ),
+                      const SizedBox(height: 10),
+                      SizedBox(
+                        width: 400,
+                        height: 150,
+                        child: TextField(
+                          controller: commentController,
+                          maxLines: null,
+                          expands: true,
+                          textAlignVertical: TextAlignVertical.top,
+                          decoration: InputDecoration(
+                            hintText: 'Escribe tu comentario...',
+                            alignLabelWithHint: true,
+                            contentPadding: const EdgeInsets.all(10),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      Consumer(
+                        builder: (context, ref, child) {
+                          ref.listen<VideogameState>(
+                            videogameViewModelProvider,
+                            (previous, next) {
+                              if (next.status ==
+                                  VideogameStatus.successComment) {
+                                ScaffoldMessenger.of(context)
+                                    .showSnackBar(const SnackBar(
+                                  content: Text("Comentario enviado"),
+                                  backgroundColor: Colors.green,
+                                ));
+                                commentController.clear();
+                              }
+                            },
+                          );
+
+                          return ElevatedButton(
+                            onPressed: () async {
+                              final String email = user.email;
+                              final String comment = commentController.text;
+                              if (comment.isEmpty) {
+                                ScaffoldMessenger.of(context)
+                                    .showSnackBar(const SnackBar(
+                                  content: Text(
+                                      "El comentario no puede estar vacio"),
+                                  backgroundColor: Colors.orange,
+                                ));
+                                return;
+                              }
+                              await videogameViewModel.commentVideogame(
+                                  email, title, releaseDate, comment);
+                              await commentViewModel.getComment(
+                                  title, releaseDate, user.email);
+                            },
+                            child: const Text("Enviar comentario"),
+                          );
+                        },
+                      )
+                    ],
+                  );
+                } else if (commentState.status == CommentStatus.success &&
+                    sessionRole != 1) {
+                  comment = commentState.comment != null
+                      ? Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const SizedBox(height: 10),
+                            const Text(
+                              'Tu comentario: ',
+                              textAlign: TextAlign.left,
+                              style: TextStyle(
+                                  fontSize: 18, fontWeight: FontWeight.bold),
+                            ),
+                            const SizedBox(height: 10),
+                            CommentCardBox(
+                                comment: commentState.comment!,
+                                sessionRole: user.id,
+                                releaseDate: releaseDate,
+                                title: title,
+                                imageData: imageData,
+                                user: user),
+                          ],
+                        )
+                      : SizedBox.shrink();
+                } else if (commentState.status == CommentStatus.error) {
+                  comment = SizedBox.shrink();
+                } else if (commentState.status == CommentStatus.initial) {
+                  comment = SizedBox.shrink();
+                }
+                return Center(
+                  child: comment,
+                );
+              }),
+              const SizedBox(height: 20),
               FutureBuilder(
                 future: showCommentsUseCase.call(title, releaseDate),
                 builder: (context, snapshot) {
@@ -477,59 +612,7 @@ class VideogameView extends HookConsumerWidget {
                                   user: user,
                                 ),
                               ),
-                            
-                            const SizedBox(height: 20),
-                            if (user.roleId != 1  
-                            && rateState.status == RateStatus.success
-                            && commentStateAux.status == CommentStatus.noComment) ...[
-                              const Text(
-                                "Añade un comentario:",
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold
-                                ),
-                              ),
-                              const SizedBox(height: 10),
-                              TextField(
-                                controller: commentController,
-                                decoration: InputDecoration(
-                                  hintText: "Escribe tu comentario...",
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(height: 10,),
-                              ElevatedButton(
-                                onPressed: () async {
-                                  //Funcionalidad de enviar comentario
-                                  final String email = user.email;
-                                  final String comment = commentController.text;
-                                  if(comment.isEmpty) {
-                                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                                      content: Text("El comentario no puede estar vacio"),
-                                      backgroundColor: Colors.orange,
-                                      ));
-                                    return;
-                                  }
-                                  final result = await commentVideogame.call(email, title, 
-                                  releaseDate, comment);
-                                  result.fold(
-                                    (sucess) {
-                                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content:
-                                      Text("Comentario enviado"),
-                                      backgroundColor: Colors.green,
-                                      ));
-                                      commentController.clear();
-                                    }, (_) {
-                                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: 
-                                      Text("Error al enviar el comentario"),
-                                      backgroundColor: Colors.red,));
-                                    }
-                                  );
-                              }, child: const Text("Enviar comentario"))
-                            ],
-                            const SizedBox(height: 70),
+                            const SizedBox(height: 20)
                           ],
                         );
                       },

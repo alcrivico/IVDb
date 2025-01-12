@@ -1,3 +1,4 @@
+import 'package:ivdb/domain/entities/comment_entity.dart';
 import 'package:ivdb/domain/entities/videogame_entity.dart';
 
 enum VideogameStatus {
@@ -21,6 +22,7 @@ class VideogameState {
   final String? errorMessage;
   final VideogameEntity? videogame;
   final int rate;
+  final CommentEntity? comment;
   //final String comment;
 
   VideogameState({
@@ -28,6 +30,7 @@ class VideogameState {
     this.errorMessage,
     this.videogame,
     this.rate = -1,
+    this.comment,
   });
 
   factory VideogameState.initial() {
@@ -39,12 +42,14 @@ class VideogameState {
     String? errorMessage,
     VideogameEntity? videogame,
     int? rate,
+    CommentEntity? comment,
   }) {
     return VideogameState(
       status: status ?? this.status,
       errorMessage: errorMessage ?? this.errorMessage,
       videogame: videogame ?? this.videogame,
       rate: rate ?? this.rate,
+      comment: comment ?? this.comment,
     );
   }
 }

@@ -64,24 +64,29 @@ class VideogameViewModel extends StateNotifier<VideogameState> {
   }
 
   Future<void> commentVideogame(
-    String email, String title, DateTime releaseDate, String comment) async {
-      state = state.copyWith(status: VideogameStatus.loadingComment);
-      final result = await _commentVideogameUseCase.call(email, title, releaseDate, comment);
+      String email, String title, DateTime releaseDate, String comment) async {
+    state = state.copyWith(status: VideogameStatus.loadingComment);
+    final result =
+        await _commentVideogameUseCase.call(email, title, releaseDate, comment);
 
-      result.fold(
-        (failure) {
-          state = state.copyWith(
-            status: VideogameStatus.errorComment,
-            errorMessage: failure.message,
-          );
-          throw Exception(failure.message);
-        },
-        (success) {
-          state = state.copyWith(
-            status: VideogameStatus.successComment
-          );
-        }
+    result.fold((failure) {
+      state = state.copyWith(
+        status: VideogameStatus.errorComment,
+        errorMessage: failure.message,
       );
+    }, (success) {
+      if (success.containsKey('comment')) {
+        state = state.copyWith(
+          status: VideogameStatus.successComment,
+          comment: success['comment'],
+        );
+      } else {
+        state = state.copyWith(
+          status: VideogameStatus.errorComment,
+          errorMessage: 'Respuesta inválida del servidor',
+        );
+      }
+    });
   }
 
   Future<void> rateVideogame(
@@ -104,6 +109,10 @@ class VideogameViewModel extends StateNotifier<VideogameState> {
       },
     );
   }
+
+  void restart() {
+    state = VideogameState.initial();
+  }
 }
 
 class CommentViewModel extends StateNotifier<CommentState> {
@@ -112,29 +121,25 @@ class CommentViewModel extends StateNotifier<CommentState> {
   CommentViewModel(this._showVideogameUsecase) : super(CommentState.initial());
 
   Future<void> getComment(
-    String title, DateTime releaseDate, String email) async {
-      state = state.copyWith(status: CommentStatus.loading);
-      final result = await _showVideogameUsecase.showUserComment(title, releaseDate, email);
+      String title, DateTime releaseDate, String email) async {
+    state = state.copyWith(status: CommentStatus.loading);
+    final result =
+        await _showVideogameUsecase.showUserComment(title, releaseDate, email);
 
-      result.fold(
-        (failure) {
-          state = state.copyWith(
-            status: CommentStatus.noComment,
-            errorMessage: failure.message,
-            comment: null
-          );
-        },
-        (success) {
-          state = state.copyWith(
-            status: CommentStatus.success,
-            errorMessage: "Entro en sucess",
-            comment: success.content
-          );
+    result.fold((failure) {
+      state = state.copyWith(
+          status: CommentStatus.noComment,
+          errorMessage: failure.message,
+          comment: null);
+    }, (success) {
+      state = state.copyWith(
+          status: CommentStatus.success,
+          errorMessage: "Entro en sucess",
+          comment: success);
 
-          return success.content;
-        }
-      );
-    }
+      return success.content;
+    });
+  }
 }
 
 class RateViewModel extends StateNotifier<RateState> {
@@ -179,8 +184,8 @@ final videogameViewModelProvider =
   final deleteVideogameUseCase = ref.read(deleteVideogameUseCaseProvider);
   final rateVideogameUseCase = ref.read(rateVideogameUsecaseProvider);
   final commentVideogameUseCase = ref.read(commentVideogameUseCaseProvider);
-  return VideogameViewModel(
-      showVideogameUsecase, deleteVideogameUseCase, rateVideogameUseCase, commentVideogameUseCase);
+  return VideogameViewModel(showVideogameUsecase, deleteVideogameUseCase,
+      rateVideogameUseCase, commentVideogameUseCase);
 });
 
 final rateViewModelProvider =
@@ -190,7 +195,7 @@ final rateViewModelProvider =
 });
 
 final commentViewModelProvider =
-  StateNotifierProvider<CommentViewModel, CommentState>((ref) {
-    final showVideogameUsecase = ref.read(showVideogameUsecaseProvider);
-    return CommentViewModel(showVideogameUsecase);
-  });
+    StateNotifierProvider<CommentViewModel, CommentState>((ref) {
+  final showVideogameUsecase = ref.read(showVideogameUsecaseProvider);
+  return CommentViewModel(showVideogameUsecase);
+});
