@@ -4,6 +4,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:ivdb/domain/entities/user_entity.dart';
+import 'package:ivdb/presentation/screens/edit_videogame/edit_videogame_view.dart';
 import 'package:ivdb/presentation/screens/explore_videogames/explore_videogames_view.dart';
 import 'package:ivdb/presentation/viewmodels/videogame/rate_state.dart';
 import 'package:ivdb/presentation/viewmodels/videogame/videogame_state.dart';
@@ -299,7 +300,12 @@ class VideogameView extends HookConsumerWidget {
                     children: [
                       TextButton(
                         onPressed: () {
-                          print('Editar videojuego');
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => EditVideogameView(videogame: videogameState.videogame!),
+                            ),
+                          );
                         },
                         style: ButtonStyle(
                           backgroundColor:
