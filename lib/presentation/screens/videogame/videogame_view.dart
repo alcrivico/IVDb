@@ -338,7 +338,6 @@ class VideogameView extends HookConsumerWidget {
                             (Route<dynamic> route) =>
                                 false, // Elimina todas las rutas anteriores
                           );
-                          ;
                         },
                         style: ButtonStyle(
                           backgroundColor:
