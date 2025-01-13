@@ -2,6 +2,7 @@ import 'package:dartz/dartz.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:ivdb/core/exceptions/fail_exception.dart';
 import 'package:ivdb/data/repositories/rest/videogame_repository.dart';
+import 'package:ivdb/domain/entities/comment_entity.dart';
 import 'package:ivdb/domain/entities/rating_entity.dart';
 import 'package:ivdb/domain/entities/videogame_entity.dart';
 import 'package:ivdb/domain/repositories/i_videogame_repository.dart';
@@ -23,6 +24,11 @@ class ShowVideogameUsecase {
       String title, DateTime releaseDate, String email) {
     return _videogameRepository.showUserRating(title, releaseDate, email);
   }
+
+  Future<Either<FailException, CommentEntity>> showUserComment(
+    String title, DateTime releaseDate, String email){
+      return _videogameRepository.showUserComment(title, releaseDate, email);
+    }
 }
 
 final showVideogameUsecaseProvider = Provider<ShowVideogameUsecase>((ref) {

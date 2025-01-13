@@ -127,17 +127,10 @@ class UserRepository implements IUserRepository {
       String email, bool state) async {
     try {
       final result = await _userService.evaluateApplication(email, state);
-
-      // Log para verificar la respuesta del servicio
-      print(
-          'Respuesta de evaluateApplication en UserService: ${result.toJson()}');
-
       return Right(result.toEntity());
     } on DioException catch (e) {
-      print('Error de DioException: ${e.response?.data}');
       return Left(ServerException(e.response?.data['message']));
     } catch (e) {
-      print('Error desconocido: $e');
       return Left(ServerException(e.toString()));
     }
   }
@@ -162,8 +155,12 @@ class UserRepository implements IUserRepository {
     try {
       final result =
           await _userService.uploadComment(email, title, releaseDate, comment);
-      final commentResponse = result['comment'] as CommentModel;
-      result['comment'] = commentResponse.toEntity();
+      if (result['comment'] is CommentModel) {
+        final commentModel = result['comment'] as CommentModel;
+        result['comment'] = commentModel.toEntity();
+      } else {
+        throw ServerException('El comentario recibido no es un Model');
+      }
       return Right(result);
     } on DioException catch (e) {
       return Left(ServerException(e.response?.data['message']));
