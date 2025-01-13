@@ -427,10 +427,12 @@ class VideogameView extends HookConsumerWidget {
                 ),
               Consumer(builder: (context, watch, child) {
                 if (commentState.status == CommentStatus.loading &&
-                    sessionRole != 1) {
+                    sessionRole != 1 &&
+                    rateState.rate != -1) {
                   comment = const Center(child: CircularProgressIndicator());
                 } else if (commentState.status == CommentStatus.noComment &&
-                    sessionRole != 1) {
+                    sessionRole != 1 &&
+                    rateState.rate != -1) {
                   comment = Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -502,7 +504,8 @@ class VideogameView extends HookConsumerWidget {
                     ],
                   );
                 } else if (commentState.status == CommentStatus.success &&
-                    sessionRole != 1) {
+                    sessionRole != 1 &&
+                    rateState.rate != -1) {
                   comment = commentState.comment != null
                       ? Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
