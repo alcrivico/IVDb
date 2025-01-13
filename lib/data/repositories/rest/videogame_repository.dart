@@ -166,7 +166,6 @@ class VideogameRepository implements IVideogameRepository {
           newPlatforms);
 
       final videogame = result['videogame'] as VideogameModel;
-
       result['videogame'] = videogame.toEntity();
 
       return Right(result);

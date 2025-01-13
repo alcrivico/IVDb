@@ -1,89 +1,82 @@
+import 'dart:convert';
 import 'dart:typed_data';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:ivdb/data/models/videogame_model.dart';
 import 'package:ivdb/domain/entities/videogame_entity.dart';
 import 'package:ivdb/domain/usecases/edit_videogame_usacase.dart';
 import 'package:ivdb/presentation/viewmodels/edit_videogame/edit_videogame_state.dart';
 
 class EditVideogameViewModel extends StateNotifier<EditVideogameState> {
-  final EditVideogameUsecase _editVideogameUsecase;
-  late VideogameEntity _originalVideogame; // Almacena el videojuego original
+  final EditVideogameUsecase
+      _editVideogameUsecase; // Almacena el videojuego original
 
   EditVideogameViewModel(this._editVideogameUsecase)
       : super(EditVideogameState.initial());
 
-  void setOriginalVideogame(VideogameEntity originalVideogame) {
-    _originalVideogame = originalVideogame; // Configura el videojuego original
-  }
-
   Future<void> editVideogame({
-  required String newTitle,
-  required String newDescription,
-  required DateTime newReleaseDate,
-  required String newImageRoute,
-  Uint8List? newImageBytes,
-  String? newDevelopers,
-  String? newPlatforms,
-  String? newGenres,
-}) async {
-  try {
-    state = state.copyWith(status: EditVideogameStatus.loading);
+    required VideogameEntity originalVideogame,
+    required String newTitle,
+    required String newDescription,
+    required DateTime newReleaseDate,
+    required String newImageRoute,
+    Uint8List? newImageBytes,
+    String? newDevelopers,
+    String? newPlatforms,
+    String? newGenres,
+  }) async {
+    try {
+      state = state.copyWith(status: EditVideogameStatus.loading);
+      // Crear modelo actualizado
 
-    // Crear modelo original a partir de la entidad
-    final originalVideogameModel = VideogameModel(
-      id: _originalVideogame.id,
-      title: _originalVideogame.title,
-      description: _originalVideogame.description,
-      releaseDate: _originalVideogame.releaseDate,
-      imageRoute: _originalVideogame.imageRoute,
-      developers: _originalVideogame.developers,
-      platforms: _originalVideogame.platforms,
-      genres: _originalVideogame.genres,
-    );
+      String? imageData;
+      if (newImageBytes != null) {
+        imageData = base64Encode(newImageBytes);
+      } else {
+        imageData = originalVideogame.imageData;
+      }
 
-    // Crear modelo actualizado
-    final updatedVideogame = VideogameModel(
-      id: _originalVideogame.id,
-      title: newTitle,
-      description: newDescription,
-      releaseDate: newReleaseDate,
-      imageRoute: newImageRoute,
-      developers: newDevelopers ?? _originalVideogame.developers,
-      platforms: newPlatforms ?? _originalVideogame.platforms,
-      genres: newGenres ?? _originalVideogame.genres,
-    );
+      final updatedVideogame = VideogameEntity(
+          id: originalVideogame.id,
+          title: newTitle,
+          description: newDescription,
+          releaseDate: newReleaseDate,
+          imageRoute: newImageRoute,
+          imageData: imageData,
+          developers: newDevelopers,
+          platforms: newPlatforms,
+          genres: newGenres);
 
-    // Llamar al caso de uso
-    final response = await _editVideogameUsecase.call(
-      originalVideogameModel, // Usar el modelo original
-      updatedVideogame,
-      newImageBytes,
-    );
+      // Llamar al caso de uso
+      final response = await _editVideogameUsecase.call(
+        originalVideogame, // Usar el modelo original
+        updatedVideogame,
+      );
 
-    response.fold(
-      (failure) {
-        state = state.copyWith(
-          status: EditVideogameStatus.error,
-          errorMessage: failure.message,
-        );
-      },
-      (editedVideogame) {
-        state = state.copyWith(
-          status: EditVideogameStatus.success,
-          videogame: editedVideogame,
-        );
-      },
-    );
-  } catch (e) {
-    state = state.copyWith(
-      status: EditVideogameStatus.error,
-      errorMessage: e.toString(),
-    );
+      response.fold(
+        (failure) {
+          print('EditVideogame error: ${failure.message}');
+          state = state.copyWith(
+            status: EditVideogameStatus.error,
+            errorMessage: failure.message,
+          );
+        },
+        (editedVideogame) {
+          print('EditVideogame success');
+          state = EditVideogameState(
+            status: EditVideogameStatus.success,
+            videogame: editedVideogame,
+            errorMessage: null,
+          );
+          print('New state: ${state.status}');
+        },
+      );
+    } catch (e) {
+      state = state.copyWith(
+        status: EditVideogameStatus.error,
+        errorMessage: e.toString(),
+      );
+    }
   }
 }
-
-}
-
 
 final editVideogameViewModelProvider =
     StateNotifierProvider<EditVideogameViewModel, EditVideogameState>((ref) {

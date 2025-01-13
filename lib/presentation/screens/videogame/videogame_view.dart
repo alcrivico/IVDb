@@ -300,12 +300,16 @@ class VideogameView extends HookConsumerWidget {
                     children: [
                       TextButton(
                         onPressed: () {
-                          Navigator.push(
+                          Navigator.pushAndRemoveUntil(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => EditVideogameView(videogame: videogameState.videogame!),
-                            ),
+                                builder: (context) => EditVideogameView(
+                                    videogame: videogameState.videogame!,
+                                    user: user)),
+                            (Route<dynamic> route) =>
+                                false, // Elimina todas las rutas anteriores
                           );
+                          ;
                         },
                         style: ButtonStyle(
                           backgroundColor:

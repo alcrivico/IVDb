@@ -53,5 +53,5 @@ class RestClient {
 final restClientProvider = Provider<RestClient>((ref) {
   return RestClient(
       baseUrl:
-          'http://10.0.2.2:8080/api'); //localhost --> Windows 10.0.2.2 --> Android
+          'http://localhost:8080/api'); //localhost --> Windows 10.0.2.2 --> Android
 });

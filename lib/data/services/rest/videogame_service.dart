@@ -253,26 +253,42 @@ class VideogameService implements IVideogameService {
       String newDevelopers,
       String newGenres,
       String newPlatforms) async {
-    List<String> newDevelopersArray = newDevelopers.split(', ');
-    List<String> newPlatformsArray = newPlatforms.split(', ');
-    List<String> newGenresArray = newGenres.split(', ');
+    final List<String> newDevelopersArray =
+        newDevelopers.split(',').map((e) => e.trim()).toList();
+    final List<String> newGenresArray =
+        newGenres.split(',').map((e) => e.trim()).toList();
+    final List<String> newPlatformsArray =
+        newPlatforms.split(',').map((e) => e.trim()).toList();
+
+    String month = releaseDate.month.toString().length == 1
+        ? '0${releaseDate.month}'
+        : releaseDate.month.toString();
+    String oldDate = '${releaseDate.year}-${month}-${releaseDate.day}';
+
+    month = newReleaseDate.month.toString().length == 1
+        ? '0${newReleaseDate.month}'
+        : newReleaseDate.month.toString();
+
+    String newDate = '${newReleaseDate.year}-${month}-${newReleaseDate.day}';
+
     final data = {
       'title': title,
-      'releaseDate': releaseDate.toIso8601String(),
+      'releaseDate': oldDate,
       'newTitle': newTitle,
       'newDescription': newDescription,
-      'newReleaseDate': newReleaseDate.toIso8601String(),
+      'newReleaseDate': newDate,
       'newImageRoute': newImageRoute,
       'newDevelopers': newDevelopersArray,
       'newGenres': newGenresArray,
       'newPlatforms': newPlatformsArray,
     };
 
-    final response =
-        await restClient.dio.patch('/videogame/change', data: data);
+    final response = await restClient.dio.put('/videogame/change', data: data);
 
+    print('Service Response: ${response.data}');
     if (response.statusCode == 200) {
-      final videogame = VideogameModel.fromJson(response.data['videogame']);
+      final videogame =
+          VideogameModel.fromJson(response.data['videogameUpdated']);
       final message = response.data['message'];
 
       return Map<String, dynamic>.from({
