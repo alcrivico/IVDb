@@ -194,15 +194,13 @@ class _EditVideogameViewState extends ConsumerState<EditVideogameView> {
                 ),
               ),
               const SizedBox(height: 20),
-
-              // Desarrolladores, géneros y plataformas
               SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     SizedBox(
-                      width: 300,
+                      width: 300, // Ajusta este valor según sea necesario
                       child: VideoGameMultiSelectComboBox(
                         title: "Desarrolladores",
                         items: developers.keys.toList(),
@@ -216,7 +214,7 @@ class _EditVideogameViewState extends ConsumerState<EditVideogameView> {
                     ),
                     const SizedBox(width: 10),
                     SizedBox(
-                      width: 300,
+                      width: 300, // Ajusta este valor según sea necesario
                       child: VideoGameMultiSelectComboBox(
                         title: "Géneros",
                         items: genres.keys.toList(),
@@ -230,7 +228,7 @@ class _EditVideogameViewState extends ConsumerState<EditVideogameView> {
                     ),
                     const SizedBox(width: 10),
                     SizedBox(
-                      width: 300,
+                      width: 300, // Ajusta este valor según sea necesario
                       child: VideoGameMultiSelectComboBox(
                         title: "Plataformas",
                         items: platforms.keys.toList(),
