@@ -333,6 +333,7 @@ class VideogameView extends HookConsumerWidget {
                             MaterialPageRoute(
                                 builder: (context) => EditVideogameView(
                                     videogame: videogameState.videogame!,
+                                    oldImageData: imageData,
                                     user: user)),
                             (Route<dynamic> route) =>
                                 false, // Elimina todas las rutas anteriores

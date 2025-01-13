@@ -1,7 +1,9 @@
+import 'dart:convert';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:ivdb/domain/entities/user_entity.dart';
 import 'package:ivdb/presentation/screens/explore_videogames/explore_videogames_view.dart';
+import 'package:ivdb/presentation/screens/videogame/videogame_view.dart';
 import 'package:ivdb/presentation/widgets/add_videogame/videogame_image.dart';
 import 'package:ivdb/presentation/widgets/add_videogame/videogame_multi_combo_box.dart';
 import 'package:ivdb/presentation/widgets/shared/button_box.dart';
@@ -95,6 +97,28 @@ class _AddVideogameViewState extends ConsumerState<AddVideogameView> {
   @override
   Widget build(BuildContext context) {
     final addVideogameState = ref.watch(addVideogameViewModelProvider);
+
+    ref.listen<AddVideogameState>(addVideogameViewModelProvider,
+        (previous, next) {
+      if (next.status == AddVideogameStatus.success) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(
+                builder: (context) => VideogameView(
+                      title: title,
+                      releaseDate: DateTime.parse(releaseDateController.text
+                          .split('/')
+                          .reversed
+                          .join('-')),
+                      imageData: base64Encode(selectedImageBytes!),
+                      user: widget.user,
+                    )),
+            (Route<dynamic> route) => false,
+          );
+        });
+      }
+    });
 
     return Scaffold(
       appBar: AppBar(

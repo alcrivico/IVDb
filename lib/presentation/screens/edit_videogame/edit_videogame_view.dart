@@ -6,6 +6,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:ivdb/domain/entities/user_entity.dart';
 import 'package:ivdb/domain/entities/videogame_entity.dart';
 import 'package:ivdb/presentation/screens/explore_videogames/explore_videogames_view.dart';
+import 'package:ivdb/presentation/screens/videogame/videogame_view.dart';
 import 'package:ivdb/presentation/widgets/add_videogame/videogame_image.dart';
 import 'package:ivdb/presentation/widgets/add_videogame/videogame_multi_combo_box.dart';
 import 'package:ivdb/presentation/widgets/shared/button_box.dart';
@@ -16,10 +17,14 @@ import 'package:ivdb/presentation/widgets/shared/home_box.dart';
 
 class EditVideogameView extends ConsumerStatefulWidget {
   final VideogameEntity videogame;
+  final String? oldImageData;
   final UserEntity user;
 
   const EditVideogameView(
-      {super.key, required this.videogame, required this.user});
+      {super.key,
+      required this.videogame,
+      required this.oldImageData,
+      required this.user});
 
   @override
   ConsumerState<EditVideogameView> createState() => _EditVideogameViewState();
@@ -86,7 +91,7 @@ class _EditVideogameViewState extends ConsumerState<EditVideogameView> {
     if (widget.videogame.imageData != null &&
         widget.videogame.imageData!.isNotEmpty) {
       try {
-        selectedImageBytes = base64Decode(widget.videogame.imageData!);
+        selectedImageBytes = base64Decode(widget.oldImageData!);
       } catch (e) {
         throw Exception('Error al decodificar la imagen');
       }
@@ -127,6 +132,32 @@ class _EditVideogameViewState extends ConsumerState<EditVideogameView> {
   @override
   Widget build(BuildContext context) {
     final editVideogameState = ref.watch(editVideogameViewModelProvider);
+
+    ref.listen<EditVideogameState>(editVideogameViewModelProvider,
+        (previous, next) {
+      if (next.status == EditVideogameStatus.success) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(
+                builder: (context) => VideogameView(
+                      title: title,
+                      releaseDate: DateTime.parse(releaseDateController.text
+                          .split('/')
+                          .reversed
+                          .join('-')),
+                      // Manejar la imagen de forma segura
+                      imageData: selectedImageBytes != null
+                          ? base64Encode(selectedImageBytes!)
+                          : widget.oldImageData ??
+                              '', // Si no hay imagen nueva, usar la original o cadena vacía
+                      user: widget.user,
+                    )),
+            (Route<dynamic> route) => false,
+          );
+        });
+      }
+    });
 
     return Scaffold(
       appBar: AppBar(
