@@ -190,7 +190,7 @@ class _EditVideogameViewState extends ConsumerState<EditVideogameView> {
                     });
                   },
                   imageBytes: selectedImageBytes,
-                  initialImageBase64: widget.videogame.imageData,
+                  initialImageBase64: widget.oldImageData,
                 ),
               ),
               const SizedBox(height: 20),
